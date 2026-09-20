@@ -1,0 +1,24 @@
+<header class="main-header">
+    <nav class="main-header_nav">
+        <ul class="main-header_item-list">
+            <li class="main-header_item"><a class="<%= path === '/' ? 'active' : '' %>" href="/">Shop</a></li>
+            <li class="main-header_item"><a class="<%= path === '/products' ? 'active' : '' %>" href="/products">Products</a></li>
+            <% if (isAuthenticated) { %>
+                <li class="main-header_item" ><a class="<%= path === '/placeholder' ? 'active' : '' %>" href="/placeholder-route">My Placeholder</a></li>
+            <% } %> 
+        </ul>
+            <ul class="main-header_item-list">
+                <% if (!isAuthenticated) { %>
+                    <li class="main-header_item">
+                        <a class="<%= path === '/login' ? 'active' : '' %>"href="/login">Login</a>
+                    </li>
+                <% }  else { %> 
+                    <li class="main-header_item">
+                        <form action="/logout" method="POST">
+                            <button type="submit" >Logout</button>
+                        </form>
+                    </li>
+                <% } %> 
+            </ul>
+    </nav>
+</header>
