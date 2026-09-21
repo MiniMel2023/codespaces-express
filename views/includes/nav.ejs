@@ -7,18 +7,19 @@
                 <li class="main-header_item"><a class="<%= path === '/employee/records' ? 'active' : '' %>" href="/employee/records">Employee Records</a></li>
             <% } %> 
         </ul>
-            <ul class="main-header_item-list">
-                <% if (!isAuthenticated) { %>
-                    <li class="main-header_item">
-                        <a class="<%= path === '/auth/login' ? 'active' : '' %>"href="/auth/login">Login</a>
-                    </li>
-                <% }  else { %> 
-                    <li class="main-header_item">
-                        <form action="/auth/logout" method="POST">
-                            <button type="submit" >Logout</button>
-                        </form>
-                    </li>
-                <% } %> 
-            </ul>
+        <ul class="main-header_item-list <%= isAuthenticated ? 'main-header_auth-list-right' : '' %>">
+            <% if (!isAuthenticated) { %>
+                <li class="main-header_item">
+                    <a class="<%= path === '/auth/login' ? 'active' : '' %>" href="/auth/login">Login</a>
+                </li>
+            <% } else { %>
+                <li class="main-header_item">
+                    <form action="/auth/logout" method="POST">
+                        <button type="submit">Logout</button>
+                    </form>
+                </li>
+            <% } %>
+        </ul>
     </nav>
+    <hr>
 </header>

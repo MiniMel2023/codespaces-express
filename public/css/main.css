@@ -1,0 +1,36 @@
+.main-header_nav {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.main-header_item-list {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.main-header_auth-list-right {
+	margin-left: auto;
+}
+
+.main-header_item a {
+	text-decoration: none;
+}
+
+.main-header_item a.active {
+	font-weight: bold;
+}
+
+.main-header_item form {
+	margin: 0;
+}
+
+.main-header hr {
+	margin: 0.75rem 0 1rem;
+}

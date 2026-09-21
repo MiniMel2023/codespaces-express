@@ -1,0 +1,20 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <h1>Edit Employee</h1>
+    <form action="/employee/edit/<%= employee._id %>" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="<%= employee.name %>" required><br><br>
+        <label for="position">Position:</label>
+        <input type="text" id="position" name="position" value="<%= employee.position %>" required><br><br>
+        <label for="department">Department:</label>
+        <input type="text" id="department" name="department" value="<%= employee.department %>" required><br><br>
+        <label for="salary">Salary:</label>
+        <input type="number" id="salary" name="salary" value="<%= employee.salary %>" required><br><br>
+        <label for="hireDate">Hire Date:</label>
+        <input type="date" id="hireDate" name="hireDate" value="<%= employee.hireDate.toISOString().split('T')[0] %>" required><br><br>
+        <button type="submit">Save Changes</button>
+    </form>
+<%- include("./includes/end.ejs") %>

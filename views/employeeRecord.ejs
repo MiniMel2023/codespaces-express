@@ -13,6 +13,7 @@
                     <th>Department</th>
                     <th>Salary</th>
                     <th>Hire Date</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -23,6 +24,14 @@
                         <td><%= employee.department %></td>
                         <td><%= employee.salary %></td>
                         <td><%= employee.hireDate.toDateString() %></td>
+                        <td>
+                            <form action="/employee/edit/<%= employee._id %>" method="GET">
+                                <button type="submit">Edit</button>
+                            </form>
+                            <form action="/employee/delete/<%= employee._id %>" method="POST" onsubmit="return confirm('Delete this employee record?');">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                 <% }) %>
             </tbody>

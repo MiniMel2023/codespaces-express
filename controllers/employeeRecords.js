@@ -3,7 +3,7 @@ const router = express.Router();
 const Employee = require('../models/employees');
 
 function getAddEmployee(req, res) {
-  res.render('homeDashboard', {
+  res.render('addEmployee', {
     message: 'Add a new employee.',
     pageTitle: 'Add Employee',
     path: req.path,
@@ -27,7 +27,7 @@ function postAddEmployee(req, res) {
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).render('homeDashboard', {
+      res.status(500).render('addEmployee', {
         message: 'Error adding employee!',
         pageTitle: 'Add Employee',
         path: '/employee/add-employee',
@@ -52,8 +52,63 @@ function getEmployeeRecords(req, res) {
     });
 }
 
+function getEditEmployee(req, res) {
+  Employee.findById(req.params.employeeId)
+    .then((employee) => {
+      if (!employee) {
+        return res.status(404).send('Employee not found');
+      }
+
+      res.render('editEmployee', {
+        employee,
+        pageTitle: 'Edit Employee',
+        path: req.path,
+        isAuthenticated: req.session.isLoggedIn
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error loading employee');
+    });
+}
+
+function postEditEmployee(req, res) {
+  const { name, position, department, salary, hireDate } = req.body;
+
+  Employee.findByIdAndUpdate(
+    req.params.employeeId,
+    { name, position, department, salary, hireDate },
+    { new: true, runValidators: true }
+  )
+    .then((employee) => {
+      if (!employee) {
+        return res.status(404).send('Employee not found');
+      }
+
+      res.redirect('/employee/records');
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error updating employee');
+    });
+}
+
+function postDeleteEmployee(req, res) {
+  Employee.findByIdAndDelete(req.params.employeeId)
+    .then(() => {
+      res.redirect('/employee/records');
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error deleting employee');
+    });
+}
+
 module.exports = {
   getAddEmployee,
   postAddEmployee,
-  getEmployeeRecords
+  getEmployeeRecords,
+  getEditEmployee,
+  postEditEmployee,
+  postDeleteEmployee
 };
