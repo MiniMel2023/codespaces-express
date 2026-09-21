@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Employee = require('../models/employees');
 
+function getSelectedDepartment(department, departments) {
+  return department && departments.includes(department) ? department : 'all';
+}
+
 function getAddEmployee(req, res) {
   res.render('addEmployee', {
     message: 'Add a new employee.',
@@ -12,13 +16,24 @@ function getAddEmployee(req, res) {
 }
 
 function postAddEmployee(req, res) {
-  const { name, position, department, salary, hireDate } = req.body;
+  const {
+    name,
+    department,
+    salaryPerHour,
+    hireDate,
+    IDnumber,
+    incomeTaxNo,
+    bankingDetails
+  } = req.body;
+
   const newEmployee = new Employee({
     name,
-    position,
     department,
-    salary,
-    hireDate
+    salaryPerHour,
+    hireDate,
+    IDnumber,
+    incomeTaxNo,
+    bankingDetails
   });
 
   newEmployee.save()
@@ -36,20 +51,27 @@ function postAddEmployee(req, res) {
     });
 }
 
-function getEmployeeRecords(req, res) {
-  Employee.find()
-    .then((employees) => {
+async function getEmployeeRecords(req, res) {
+  try {
+    const allEmployees = await Employee.find().sort({ name: 1 });
+    const departments = [...new Set(allEmployees.map((employee) => employee.department))].sort();
+    const department = getSelectedDepartment(req.query.department, departments);
+    const employees = department === 'all'
+      ? allEmployees
+      : allEmployees.filter((employee) => employee.department === department);
+
       res.render('employeeRecord', {
         employees,
+        department,
+        departments,
         pageTitle: 'Employee Records',
         path: req.path,
         isAuthenticated: req.session.isLoggedIn
       });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error retrieving employee records');
-    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error retrieving employee records');
+  }
 }
 
 function getEditEmployee(req, res) {
@@ -73,11 +95,27 @@ function getEditEmployee(req, res) {
 }
 
 function postEditEmployee(req, res) {
-  const { name, position, department, salary, hireDate } = req.body;
+  const {
+    name,
+    department,
+    salaryPerHour,
+    hireDate,
+    IDnumber,
+    incomeTaxNo,
+    bankingDetails
+  } = req.body;
 
   Employee.findByIdAndUpdate(
     req.params.employeeId,
-    { name, position, department, salary, hireDate },
+    {
+      name,
+      department,
+      salaryPerHour,
+      hireDate,
+      IDnumber,
+      incomeTaxNo,
+      bankingDetails
+    },
     { new: true, runValidators: true }
   )
     .then((employee) => {

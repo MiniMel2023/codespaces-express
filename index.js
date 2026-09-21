@@ -3,10 +3,13 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo').default;
 const bcrypt = require('bcryptjs');
 
 const homeDashboardRoutes = require('./routes/homeDashboard');
 const employeeRoutes = require('./routes/employeeRecords');
+const wageTrackerRoutes = require('./routes/wageTracker');
+const payrollPayoutRoutes = require('./routes/payrollPayout');
 const authRoutes = require('./routes/auth');
 
 const User = require('./models/user');
@@ -27,6 +30,10 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'development-only-session-secret',
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: MONGO_URI,
+    collectionName: 'sessions'
+  }),
   cookie: {
     httpOnly: true,
     sameSite: 'lax',
@@ -43,6 +50,8 @@ app.use((req, res, next) => {
 app.use('/home', homeDashboardRoutes);
 app.use('/auth', authRoutes);
 app.use('/employee', employeeRoutes);
+app.use('/wage-tracker', wageTrackerRoutes);
+app.use('/payroll/payout', payrollPayoutRoutes);
 
 
 

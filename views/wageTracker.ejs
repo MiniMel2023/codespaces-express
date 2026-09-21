@@ -1,0 +1,227 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <div class="dashboard-shell">
+        <header class="dashboard-header">
+            <div>
+                <p class="eyebrow">Payroll</p>
+                <h1>Wage Tracker</h1>
+                <div class="current-view <%= viewType === 'weekly' ? 'weekly-view' : 'monthly-view' %>">
+                    <span class="current-view-dot"></span>
+                    <span>Current view:</span>
+                    <strong><%= viewType === 'weekly' ? 'Weekly' : 'Monthly' %></strong>
+                </div>
+            </div>
+
+            <form class="month-selector" action="/wage-tracker" method="GET">
+                <label for="viewType">View:</label>
+                <select id="viewType" name="viewType">
+                    <option value="monthly" <%= viewType === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                    <option value="weekly" <%= viewType === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                </select>
+
+                <% if (viewType === 'weekly') { %>
+                    <label for="week">Tracking week:</label>
+                    <input type="week" id="week" name="week" value="<%= week %>" required>
+                <% } else { %>
+                    <label for="month">Tracking month:</label>
+                    <input type="month" id="month" name="month" value="<%= month %>" required>
+                <% } %>
+                <label for="department">Department:</label>
+                <select id="department" name="department">
+                    <option value="all" <%= department === 'all' ? 'selected' : '' %>>All departments</option>
+                    <% departments.forEach(item => { %>
+                        <option value="<%= item %>" <%= department === item ? 'selected' : '' %>><%= item %></option>
+                    <% }) %>
+                </select>
+                <button type="submit" class="primary-button">View</button>
+            </form>
+        </header>
+
+        <section class="dashboard-metrics">
+            <article class="metric-card">
+                <span>Total employees</span>
+                <strong><%= dashboardStats.totalEmployees %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Total hours</span>
+                <strong><%= dashboardStats.totalHours.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Total wages</span>
+                <strong>R <%= dashboardStats.totalWages.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Average hours</span>
+                <strong><%= dashboardStats.averageHours.toFixed(2) %></strong>
+            </article>
+        </section>
+
+        <section class="weekly-summary" aria-label="Daily hours summary">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Team overview</p>
+                    <h2>Daily hours summary</h2>
+                </div>
+                <span class="summary-period"><%= periodLabel %></span>
+            </div>
+            <div class="daily-total-row period-days-<%= dailyTotals.length %>">
+                <% dailyTotals.forEach(day => { %>
+                    <div class="daily-total">
+                        <span><%= day.label %></span>
+                        <strong><%= day.hours.toFixed(2) %></strong>
+                        <small>hrs</small>
+                    </div>
+                <% }) %>
+            </div>
+        </section>
+
+        <% if (employees.length > 0) { %>
+            <form action="/wage-tracker" method="POST" class="bulk-wage-form">
+                <input type="hidden" name="viewType" value="<%= viewType %>">
+                <input type="hidden" name="department" value="<%= department %>">
+                <% if (viewType === 'weekly') { %>
+                    <input type="hidden" name="week" value="<%= week %>">
+                <% } else { %>
+                    <input type="hidden" name="month" value="<%= month %>">
+                <% } %>
+                <div class="bulk-toolbar">
+                    <label class="select-all-field">
+                        <input type="checkbox" id="selectAllEmployees">
+                        <span>Select all employees</span>
+                    </label>
+                    <button type="submit" class="primary-button">Save selected hours</button>
+                </div>
+
+                <div class="wage-dashboard-content">
+                <section class="employee-grid">
+                <% employees.forEach(employee => { %>
+                    <% const record = recordsByEmployee.get(employee._id.toString()); %>
+                    <% const dailyHours = record && Array.isArray(record.dailyHours) ? record.dailyHours : []; %>
+                    <% const leaveStatuses = record && Array.isArray(record.leaveStatuses) ? record.leaveStatuses : []; %>
+                    <% const payroll = payrollByEmployee.get(employee._id.toString()); %>
+                    <% const employeeHours = payroll.paidHours; %>
+                    <% const employeeOvertime = Math.max(employeeHours - 40, 0); %>
+                    <article class="employee-panel">
+                        <div class="employee-panel-header <%= employeeOvertime > 0 ? 'has-overtime' : '' %>">
+                            <div>
+                                <p class="panel-label"><%= employee.department %></p>
+                                <h2><%= employee.name %></h2>
+                            </div>
+                            <div class="employee-summary">
+                                <span>Hours</span>
+                                <strong><%= employeeHours.toFixed(2) %></strong>
+                            </div>
+                        </div>
+
+                        <details class="employee-update-dropdown">
+                            <summary>
+                                <span>Update Employee Figures</span>
+                                <span class="employee-update-chevron"></span>
+                            </summary>
+                            <div class="employee-update-content">
+                                <label class="employee-edit-toggle">
+                                    <input type="checkbox" name="selectedEmployees[]" value="<%= employee._id %>" class="employee-selector">
+                                    <span>Include this employee when saving</span>
+                                </label>
+
+                                <% if (employeeOvertime > 0) { %>
+                                    <div class="overtime-alert">Overtime: <strong><%= employeeOvertime.toFixed(2) %> hrs</strong> over 40 hours</div>
+                                <% } %>
+
+                                <dl class="employee-mini-grid">
+                                    <div>
+                                        <dt>Hourly rate</dt>
+                                        <dd>R <%= employee.salaryPerHour.toFixed(2) %></dd>
+                                    </div>
+                                    <div>
+                                        <dt><%= viewType === 'weekly' ? 'Weekly wage' : 'Monthly wage' %></dt>
+                                        <dd>R <%= record ? record.totalWage.toFixed(2) : '0.00' %></dd>
+                                    </div>
+                                </dl>
+
+                                <div class="wage-form">
+                            <div class="day-grid-scroll">
+                                <div class="day-grid period-days-<%= daysOfPeriod.length %>">
+                                    <% daysOfPeriod.forEach((day, index) => { %>
+                                        <% const dayValue = Number(dailyHours[index] || 0); %>
+                                        <label class="day-field <%= dayValue > 8 ? 'is-overtime' : '' %>">
+                                            <span><%= day.label %></span>
+                                            <input type="number" name="employees[<%= employee._id %>][dailyHours][<%= index %>]" min="0" step="0.25" value="<%= dayValue %>">
+                                            <select name="employees[<%= employee._id %>][leaveStatuses][<%= index %>]">
+                                                <option value="none" <%= (leaveStatuses[index] || 'none') === 'none' ? 'selected' : '' %>>No leave</option>
+                                                <option value="annual" <%= leaveStatuses[index] === 'annual' ? 'selected' : '' %>>Annual</option>
+                                                <option value="sick" <%= leaveStatuses[index] === 'sick' ? 'selected' : '' %>>Sick</option>
+                                                <option value="unpaid" <%= leaveStatuses[index] === 'unpaid' ? 'selected' : '' %>>Unpaid</option>
+                                            </select>
+                                        </label>
+                                    <% }) %>
+                                </div>
+                            </div>
+
+                            <div class="form-footer">
+                                <div class="period-total">
+                                    <span>Total for <%= periodLabel %></span>
+                                    <strong><%= employeeHours.toFixed(2) %> hrs</strong>
+                                </div>
+                                <span class="save-hint">Select this employee above to include these edits.</span>
+                            </div>
+                                </div>
+                            </div>
+                        </details>
+                    </article>
+                <% }) %>
+                </section>
+
+                <aside class="wage-breakdown-panel">
+                    <div class="section-heading">
+                        <div>
+                            <p class="eyebrow">Payroll detail</p>
+                            <h2>Employee breakdown</h2>
+                        </div>
+                    </div>
+                    <div class="breakdown-list">
+                        <% employeeBreakdown.forEach(item => { %>
+                            <div class="breakdown-item <%= item.overtimeHours > 0 ? 'has-overtime' : '' %>">
+                                <div>
+                                    <strong><%= item.employee.name %></strong>
+                                    <span><%= item.employee.department %></span>
+                                </div>
+                                <div class="breakdown-values">
+                                    <span><%= item.hoursWorked.toFixed(2) %> hrs</span>
+                                    <strong>R <%= item.totalWage.toFixed(2) %></strong>
+                                </div>
+                                <% if (item.overtimeHours > 0) { %>
+                                    <small><%= item.overtimeHours.toFixed(2) %> overtime hrs</small>
+                                <% } %>
+                            </div>
+                        <% }) %>
+                    </div>
+                </aside>
+                </div>
+            </form>
+        <% } else { %>
+            <p>No employees found. Add an employee before tracking wages.</p>
+        <% } %>
+    </div>
+    <script>
+        const selectAllEmployees = document.getElementById('selectAllEmployees');
+        const employeeSelectors = document.querySelectorAll('.employee-selector');
+
+        if (selectAllEmployees) {
+            selectAllEmployees.addEventListener('change', () => {
+                employeeSelectors.forEach((selector) => {
+                    selector.checked = selectAllEmployees.checked;
+                });
+            });
+        }
+
+        employeeSelectors.forEach((selector) => {
+            selector.addEventListener('change', () => {
+                selectAllEmployees.checked = [...employeeSelectors].every((employeeSelector) => employeeSelector.checked);
+            });
+        });
+    </script>
+<%- include('./includes/end.ejs') %>

@@ -3,8 +3,24 @@
         <ul class="main-header_item-list">
             <% if (isAuthenticated) { %>
                 <li class="main-header_item"><a class="<%= path === '/home' ? 'active' : '' %>" href="/home">Home</a></li>
-                <li class="main-header_item"><a class="<%= path === '/employee/add-employee' ? 'active' : '' %>" href="/employee/add-employee">Add Employee</a></li>
-                <li class="main-header_item"><a class="<%= path === '/employee/records' ? 'active' : '' %>" href="/employee/records">Employee Records</a></li>
+                <li class="main-header_item main-header_submenu">
+                    <details <%= path.startsWith('/employee/') ? 'open' : '' %>>
+                        <summary class="<%= path.startsWith('/employee/') ? 'active' : '' %>">Employee Details</summary>
+                        <ul class="main-header_submenu-list">
+                            <li><a class="<%= path === '/employee/add-employee' ? 'active' : '' %>" href="/employee/add-employee">Add Employee</a></li>
+                            <li><a class="<%= path === '/employee/records' ? 'active' : '' %>" href="/employee/records">Employee Records</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="main-header_item main-header_submenu">
+                    <details <%= path === '/wage-tracker' || path === '/payroll/payout' ? 'open' : '' %>>
+                        <summary class="<%= path === '/wage-tracker' || path === '/payroll/payout' ? 'active' : '' %>">Payroll</summary>
+                        <ul class="main-header_submenu-list">
+                            <li><a class="<%= path === '/wage-tracker' ? 'active' : '' %>" href="/wage-tracker">Wage Tracker</a></li>
+                            <li><a class="<%= path === '/payroll/payout' ? 'active' : '' %>" href="/payroll/payout">Payroll Payout</a></li>
+                        </ul>
+                    </details>
+                </li>
             <% } %> 
         </ul>
         <ul class="main-header_item-list <%= isAuthenticated ? 'main-header_auth-list-right' : '' %>">

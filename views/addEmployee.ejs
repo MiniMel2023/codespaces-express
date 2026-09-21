@@ -10,11 +10,36 @@
         <label for="position">Position:</label>
         <input type="text" id="position" name="position" required><br><br>
         <label for="department">Department:</label>
-        <input type="text" id="department" name="department" required><br><br>
-        <label for="salary">Salary:</label>
-        <input type="number" id="salary" name="salary" required><br><br>
+        <select id="department" name="department" required>
+            <option value="Owner">Owner</option>
+            <option value="Assistant Manager">Assistant Manager</option>
+            <option value="Manager">Manager</option>
+            <option value="Barista">Barista</option>
+            <option value="Waiter">Waiter</option>
+            <option value="Kitchen Supervisor">Kitchen Supervisor</option>
+            <option value="Kitchen">Kitchen</option>
+        </select><br><br>
+        <label for="salaryPerHour">Salary per hour:</label>
+        <input type="number" id="salaryPerHour" name="salaryPerHour" required><br><br>
         <label for="hireDate">Hire Date:</label>
         <input type="date" id="hireDate" name="hireDate" required><br><br>
+        <label for="IDnumber">ID number:</label>
+        <input type="text" id="IDnumber" name="IDnumber" required><br><br>
+        <label for="incomeTaxNo">Income tax number:</label>
+        <input type="text" id="incomeTaxNo" name="incomeTaxNo" required><br><br>
+        <label for="UIFregNo">UIF registration number:</label>
+        <input type="text" id="UIFregNo" name="bankingDetails[UIFregNo]" required><br><br>
+        <label for="sickDaysPerYear">Sick days per year:</label>
+        <input type="number" id="sickDaysPerYear" name="bankingDetails[sickDaysPerYear]" required><br><br>
+        <fieldset>
+            <legend>Banking Details</legend>
+            <label for="bankName">Bank name:</label>
+            <input type="text" id="bankName" name="bankingDetails[bankName]" required><br><br>
+            <label for="accountNumber">Account number:</label>
+            <input type="text" id="accountNumber" name="bankingDetails[accountNumber]" required><br><br>
+            <label for="branchCode">Branch code:</label>
+            <input type="text" id="branchCode" name="bankingDetails[branchCode]" required><br><br>
+        </fieldset>
         <button type="submit">Add Employee</button>
     </form>
 <%- include("./includes/end.ejs") %>

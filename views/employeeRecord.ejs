@@ -4,38 +4,78 @@
 </head>
 <body>
     <h1>Employee Records</h1>
+    <form class="records-filter" action="/employee/records" method="GET">
+        <label for="department">Department:</label>
+        <select id="department" name="department">
+            <option value="all" <%= department === 'all' ? 'selected' : '' %>>All departments</option>
+            <% departments.forEach(item => { %>
+                <option value="<%= item %>" <%= department === item ? 'selected' : '' %>><%= item %></option>
+            <% }) %>
+        </select>
+        <button type="submit">View department</button>
+    </form>
     <% if (employees.length > 0) { %>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Position</th>
-                    <th>Department</th>
-                    <th>Salary</th>
-                    <th>Hire Date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% employees.forEach(employee => { %>
-                    <tr>
-                        <td><%= employee.name %></td>
-                        <td><%= employee.position %></td>
-                        <td><%= employee.department %></td>
-                        <td><%= employee.salary %></td>
-                        <td><%= employee.hireDate.toDateString() %></td>
-                        <td>
-                            <form action="/employee/edit/<%= employee._id %>" method="GET">
-                                <button type="submit">Edit</button>
-                            </form>
-                            <form action="/employee/delete/<%= employee._id %>" method="POST" onsubmit="return confirm('Delete this employee record?');">
-                                <button type="submit">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
+        <section class="employee-accordion">
+            <% employees.forEach(employee => { %>
+                <article class="employee-card">
+                    <details>
+                        <summary><%= employee.name %></summary>
+                        <div class="employee-details">
+                            <dl class="employee-info-grid">
+                                <div>
+                                    <dt>Department</dt>
+                                    <dd><%= employee.department %></dd>
+                                </div>
+                                <div>
+                                    <dt>Salary per hour</dt>
+                                    <dd><%= employee.salaryPerHour %></dd>
+                                </div>
+                                <div>
+                                    <dt>Hire Date</dt>
+                                    <dd><%= employee.hireDate.toDateString() %></dd>
+                                </div>
+                                <div>
+                                    <dt>ID number</dt>
+                                    <dd><%= employee.IDnumber %></dd>
+                                </div>
+                                <div>
+                                    <dt>Income tax number</dt>
+                                    <dd><%= employee.incomeTaxNo %></dd>
+                                </div>
+                                <div>
+                                    <dt>Bank</dt>
+                                    <dd><%= employee.bankingDetails.bankName %></dd>
+                                </div>
+                                <div>
+                                    <dt>Account number</dt>
+                                    <dd><%= employee.bankingDetails.accountNumber %></dd>
+                                </div>
+                                <div>
+                                    <dt>Branch code</dt>
+                                    <dd><%= employee.bankingDetails.branchCode %></dd>
+                                </div>
+                                <div>
+                                    <dt>UIF registration</dt>
+                                    <dd><%= employee.bankingDetails.UIFregNo %></dd>
+                                </div>
+                                <div>
+                                    <dt>Sick days per year</dt>
+                                    <dd><%= employee.bankingDetails.sickDaysPerYear %></dd>
+                                </div>
+                            </dl>
+                            <div class="employee-actions">
+                                <form action="/employee/edit/<%= employee._id %>" method="GET">
+                                    <button type="submit">Edit</button>
+                                </form>
+                                <form action="/employee/delete/<%= employee._id %>" method="POST" onsubmit="return confirm('Delete this employee record?');">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </details>
+                </article>
+            <% }) %>
+        </section>
     <% } else { %>
         <p>No employee records found.</p>
     <% } %>

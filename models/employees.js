@@ -2,12 +2,31 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const employeeSchema = new Schema({
-  name: {
+const bankingDetailsSchema = new Schema({
+  bankName: {
     type: String,
     required: true
   },
-  position: {
+  accountNumber: {
+    type: String,
+    required: true
+  },
+  branchCode: {
+    type: String,
+    required: true
+  },
+  UIFregNo: {
+    type: String,
+    required: true
+  },
+  sickDaysPerYear: {
+    type: Number,
+    required: true
+  }
+}, { _id: false });
+
+const employeeSchema = new Schema({
+  name: {
     type: String,
     required: true
   },
@@ -15,13 +34,26 @@ const employeeSchema = new Schema({
     type: String,
     required: true
   },
-  salary: {
+  salaryPerHour: {
     type: Number,
     required: true
   },
   hireDate: {
     type: Date,
     required: true
+  },
+  IDnumber: {
+    type: String,
+    required: true
+  },
+  incomeTaxNo: {
+    type: String,
+    required: true
+  },
+  bankingDetails: {
+    type: bankingDetailsSchema,
+    required: true,
+    default: undefined
   }
 });
 

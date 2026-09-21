@@ -1,0 +1,81 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <main class="dashboard-shell payout-page">
+        <header class="dashboard-header">
+            <div>
+                <p class="eyebrow">Payroll</p>
+                <h1>Payroll Payout</h1>
+                <p class="payout-period">Weekly wages: <strong><%= weekLabel %></strong> | Tips: <strong><%= tipPeriodLabel %></strong></p>
+            </div>
+            <form class="month-selector" action="/payroll/payout" method="GET">
+                <label for="week">Wage week:</label>
+                <input type="week" id="week" name="week" value="<%= week %>" required>
+                <label for="tipsMonth">Tips paid on 15th:</label>
+                <input type="month" id="tipsMonth" name="tipsMonth" value="<%= tipsMonth %>" required>
+                <label for="department">Department:</label>
+                <select id="department" name="department">
+                    <option value="all" <%= department === 'all' ? 'selected' : '' %>>All departments</option>
+                    <% departments.forEach(item => { %>
+                        <option value="<%= item %>" <%= department === item ? 'selected' : '' %>><%= item %></option>
+                    <% }) %>
+                </select>
+                <button type="submit" class="primary-button">View payout</button>
+            </form>
+        </header>
+
+        <section class="dashboard-metrics">
+            <article class="metric-card">
+                <span>Wages</span>
+                <strong>R <%= totalWages.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Tips</span>
+                <strong>R <%= totalTips.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Total payout</span>
+                <strong>R <%= totalPayout.toFixed(2) %></strong>
+            </article>
+        </section>
+
+        <section class="payout-table-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Employee payout summary</p>
+                    <h2>Wages and tips</h2>
+                </div>
+            </div>
+            <% if (payoutRows.length > 0) { %>
+                <div class="payout-table-wrap">
+                    <table class="payout-table">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Department</th>
+                                <th>Weekly wages</th>
+                                <th>Tips</th>
+                                <th>Total payout</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% payoutRows.forEach(row => { %>
+                                <tr>
+                                    <td><strong><%= row.employee.name %></strong></td>
+                                    <td><%= row.employee.department %></td>
+                                    <td>R <%= row.wageAmount.toFixed(2) %></td>
+                                    <td>R <%= row.tipAmount.toFixed(2) %></td>
+                                    <td><strong>R <%= row.totalPayout.toFixed(2) %></strong></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <p>No employees found for this department.</p>
+            <% } %>
+        </section>
+    </main>
+<%- include('./includes/end.ejs') %>
