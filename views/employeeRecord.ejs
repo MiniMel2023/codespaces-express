@@ -1,0 +1,34 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <h1>Employee Records</h1>
+    <% if (employees.length > 0) { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Salary</th>
+                    <th>Hire Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% employees.forEach(employee => { %>
+                    <tr>
+                        <td><%= employee.name %></td>
+                        <td><%= employee.position %></td>
+                        <td><%= employee.department %></td>
+                        <td><%= employee.salary %></td>
+                        <td><%= employee.hireDate.toDateString() %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>No employee records found.</p>
+    <% } %>
+
+<%- include("./includes/end.ejs") %>

@@ -1,0 +1,70 @@
+<%- include("./includes/head.ejs") %>
+</head>
+<body>
+    <%- include("./includes/nav.ejs") %>
+
+    <main>
+        <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+            <p><%= successMessage %></p>
+        <% } %>
+
+        <% if (mode === 'signup') { %>
+            <form class="login-form" id="signup-form" action="/auth/signup" method="POST">
+                <div class="form-control">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" id="name" required>
+                </div>
+                <div class="form-control">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                <div class="form-control">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+ 
+                <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+            <p><%= errorMessage %></p>
+        <% } %>
+
+                <button class="btn" type="submit">Create Account</button>
+            </form>
+
+            <script>
+                const signupForm = document.getElementById('signup-form');
+                const signupPassword = document.getElementById('password');
+                const signupEmail = document.getElementById('email');
+
+                signupForm.addEventListener('submit', function (event) {
+                    if (signupPassword.value.length < 6) {
+                        event.preventDefault();
+                        alert('Password must be at least 6 characters long. Please try again.');
+                        signupPassword.focus();
+                        return;
+                    }
+
+                    if (signupEmail.value.trim() === '') {
+                        event.preventDefault();
+                        alert('Email is required. Please try again.');
+                        signupEmail.focus();
+                    }
+                });
+            </script>
+            <p>Already have an account? <a href="/auth/login">Login</a></p>
+        <% } else { %>
+            <form class="login-form" action="/auth/login" method="POST">
+                <div class="form-control">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                <div class="form-control">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+
+                <button class="btn" type="submit">Login</button>
+            </form>
+            <p>Need an account? <a href="/auth/signup">Sign Up</a></p>
+        <% } %>
+    </main>
+<%- include("./includes/end.ejs") %>

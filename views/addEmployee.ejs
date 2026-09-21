@@ -1,0 +1,20 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <h1>Add New Employee</h1>
+    <form action="/employee/add-employee" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="position">Position:</label>
+        <input type="text" id="position" name="position" required><br><br>
+        <label for="department">Department:</label>
+        <input type="text" id="department" name="department" required><br><br>
+        <label for="salary">Salary:</label>
+        <input type="number" id="salary" name="salary" required><br><br>
+        <label for="hireDate">Hire Date:</label>
+        <input type="date" id="hireDate" name="hireDate" required><br><br>
+        <button type="submit">Add Employee</button>
+    </form>
+<%- include("./includes/end.ejs") %>
