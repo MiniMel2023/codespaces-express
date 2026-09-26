@@ -1,9 +1,43 @@
 const express = require('express');
 const router = express.Router();
 const Employee = require('../models/employees');
+const WageTracker = require('./wageTracker');
+
+function getEmployeeRecords(req, res) {
+  Employee.find()
+    .then((employees) => {
+      res.render('employeeRecord', {
+        employees,
+        pageTitle: 'Employee Records',
+        path: req.path,
+        isAuthenticated: req.session.isLoggedIn
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error retrieving employee records');
+    });
+}
 
 function getSelectedDepartment(department, departments) {
   return department && departments.includes(department) ? department : 'all';
+}
+
+async function getShifts(req, res) {
+  const week = WageTracker.getSelectedWeek(req.query.week);
+  const allEmployees = await Employee.find().sort({ name: 1 });
+  const departments = [...new Set(allEmployees.map((employee) => employee.department))].sort();
+  const department = getSelectedDepartment(req.query.department, departments);
+
+  res.render('shifts', {
+    week,
+    weekLabel: WageTracker.getWeekDateRange(week),
+    department,
+    departments,
+    pageTitle: 'Shift Tracking',
+    path: req.path,
+    isAuthenticated: req.session.isLoggedIn
+  });
 }
 
 function getAddEmployee(req, res) {
@@ -20,9 +54,16 @@ function postAddEmployee(req, res) {
     name,
     department,
     salaryPerHour,
+    turnoverTarget,
     hireDate,
     IDnumber,
     incomeTaxNo,
+    annualLeaveDaysPerYear,
+    unpaidLeaveDaysPerYear,
+    offDaysPerYear,
+    workDaysPerYear,
+    UIFregNo,
+    sickDaysPerYear,
     bankingDetails
   } = req.body;
 
@@ -30,9 +71,16 @@ function postAddEmployee(req, res) {
     name,
     department,
     salaryPerHour,
+    turnoverTarget: turnoverTarget === '' ? null : turnoverTarget,
     hireDate,
     IDnumber,
     incomeTaxNo,
+    annualLeaveDaysPerYear,
+    unpaidLeaveDaysPerYear,
+    offDaysPerYear,
+    workDaysPerYear,
+    UIFregNo,
+    sickDaysPerYear,
     bankingDetails
   });
 
@@ -99,21 +147,35 @@ function postEditEmployee(req, res) {
     name,
     department,
     salaryPerHour,
+    turnoverTarget,
     hireDate,
     IDnumber,
     incomeTaxNo,
+    annualLeaveDaysPerYear,
+    unpaidLeaveDaysPerYear,
+    offDaysPerYear,
+    workDaysPerYear,
+    UIFregNo,
+    sickDaysPerYear,
     bankingDetails
   } = req.body;
 
   Employee.findByIdAndUpdate(
     req.params.employeeId,
-    {
+  {
       name,
       department,
       salaryPerHour,
+      turnoverTarget: turnoverTarget === '' ? null : turnoverTarget,
       hireDate,
       IDnumber,
       incomeTaxNo,
+      annualLeaveDaysPerYear,
+      unpaidLeaveDaysPerYear,
+      offDaysPerYear,
+      workDaysPerYear,
+      UIFregNo,
+      sickDaysPerYear,
       bankingDetails
     },
     { new: true, runValidators: true }
@@ -146,6 +208,7 @@ module.exports = {
   getAddEmployee,
   postAddEmployee,
   getEmployeeRecords,
+  getShifts,
   getEditEmployee,
   postEditEmployee,
   postDeleteEmployee

@@ -9,7 +9,7 @@ const bcrypt = require('bcryptjs');
 const homeDashboardRoutes = require('./routes/homeDashboard');
 const employeeRoutes = require('./routes/employeeRecords');
 const wageTrackerRoutes = require('./routes/wageTracker');
-const payrollPayoutRoutes = require('./routes/payrollPayout');
+const payrollRoutes = require('./routes/payrollPayout');
 const authRoutes = require('./routes/auth');
 
 const User = require('./models/user');
@@ -51,7 +51,7 @@ app.use('/home', homeDashboardRoutes);
 app.use('/auth', authRoutes);
 app.use('/employee', employeeRoutes);
 app.use('/wage-tracker', wageTrackerRoutes);
-app.use('/payroll/payout', payrollPayoutRoutes);
+app.use('/payroll', payrollRoutes);
 
 
 
