@@ -22,24 +22,34 @@
         </select><br><br>
         <label for="salaryPerHour">Salary per hour:</label>
         <input type="number" id="salaryPerHour" name="salaryPerHour" value="<%= employee.salaryPerHour %>" required><br><br>
+        <label for="turnoverTarget">Weekly turnover target (optional):</label>
+        <input type="number" id="turnoverTarget" name="turnoverTarget" min="0" step="0.01" value="<%= employee.turnoverTarget ?? '' %>"><br><br>
         <label for="hireDate">Hire Date:</label>
         <input type="date" id="hireDate" name="hireDate" value="<%= employee.hireDate.toISOString().split('T')[0] %>" required><br><br>
         <label for="IDnumber">ID number:</label>
         <input type="text" id="IDnumber" name="IDnumber" value="<%= employee.IDnumber %>" required><br><br>
         <label for="incomeTaxNo">Income tax number:</label>
         <input type="text" id="incomeTaxNo" name="incomeTaxNo" value="<%= employee.incomeTaxNo %>" required><br><br>
+        <label for="annualLeaveDaysPerYear">Annual leave days per year:</label>
+        <input type="number" id="annualLeaveDaysPerYear" name="annualLeaveDaysPerYear" min="0" value="<%= employee.annualLeaveDaysPerYear %>" required><br><br>
+        <label for="unpaidLeaveDaysPerYear">Unpaid leave days per year:</label>
+        <input type="number" id="unpaidLeaveDaysPerYear" name="unpaidLeaveDaysPerYear" min="0" value="<%= employee.unpaidLeaveDaysPerYear %>" required><br><br>
+        <label for="offDaysPerYear">OFF Days per year:</label>
+        <input type="number" id="offDaysPerYear" name="offDaysPerYear" min="0" value="<%= employee.offDaysPerYear ?? '' %>" required><br><br>
+        <label for="workDaysPerYear">Work Days per year:</label>
+        <input type="number" id="workDaysPerYear" name="workDaysPerYear" min="0" value="<%= employee.workDaysPerYear ?? '' %>" required><br><br>
+        <label for="UIFregNo">UIF registration number:</label>
+        <input type="text" id="UIFregNo" name="UIFregNo" value="<%= employee.UIFregNo ?? employee.bankingDetails?.UIFregNo ?? '' %>" required><br><br>
+        <label for="sickDaysPerYear">Sick days per year:</label>
+        <input type="number" id="sickDaysPerYear" name="sickDaysPerYear" value="<%= employee.sickDaysPerYear ?? employee.bankingDetails?.sickDaysPerYear ?? '' %>" required><br><br>
         <fieldset>
             <legend>Banking Details</legend>
             <label for="bankName">Bank name:</label>
-            <input type="text" id="bankName" name="bankingDetails[bankName]" value="<%= employee.bankingDetails.bankName %>" required><br><br>
+            <input type="text" id="bankName" name="bankingDetails[bankName]" value="<%= employee.bankingDetails?.bankName ?? '' %>" required><br><br>
             <label for="accountNumber">Account number:</label>
-            <input type="text" id="accountNumber" name="bankingDetails[accountNumber]" value="<%= employee.bankingDetails.accountNumber %>" required><br><br>
+            <input type="text" id="accountNumber" name="bankingDetails[accountNumber]" value="<%= employee.bankingDetails?.accountNumber ?? '' %>" required><br><br>
             <label for="branchCode">Branch code:</label>
-            <input type="text" id="branchCode" name="bankingDetails[branchCode]" value="<%= employee.bankingDetails.branchCode %>" required><br><br>
-            <label for="UIFregNo">UIF registration number:</label>
-            <input type="text" id="UIFregNo" name="bankingDetails[UIFregNo]" value="<%= employee.bankingDetails.UIFregNo %>" required><br><br>
-            <label for="sickDaysPerYear">Sick days per year:</label>
-            <input type="number" id="sickDaysPerYear" name="bankingDetails[sickDaysPerYear]" value="<%= employee.bankingDetails.sickDaysPerYear %>" required><br><br>
+            <input type="text" id="branchCode" name="bankingDetails[branchCode]" value="<%= employee.bankingDetails?.branchCode ?? '' %>" required><br><br>
         </fieldset>
         <button type="submit">Save Changes</button>
     </form>

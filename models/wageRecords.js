@@ -37,6 +37,14 @@ const wageRecordSchema = new mongoose.Schema({
       message: 'A month cannot contain more than 31 daily entries'
     }
   },
+  dailyTurnover: {
+    type: [Number],
+    default: () => Array(31).fill(0),
+    validate: {
+      validator: (turnover) => turnover.length <= 31 && turnover.every((amount) => amount >= 0),
+      message: 'Daily turnover must contain no more than 31 non-negative entries'
+    }
+  },
   leaveStatuses: {
     type: [String],
     default: () => Array(31).fill('none'),

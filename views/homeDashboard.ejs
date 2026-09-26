@@ -3,10 +3,32 @@
 
 </head>
 <body>
-    <h1>Welcome to the Home Dashboard</h1>
-    <form class="month-selector" action="/home" method="GET">
-        <label for="week">Tracking week:</label>
-        <input type="week" id="week" name="week" value="<%= week %>" required>
+    <div class="dashboard-shell">
+    <header class="dashboard-header">
+        <div>
+            <p class="eyebrow">Payroll</p>
+            <h1>Home Dashboard</h1>
+            <span class="summary-period"><%= periodLabel %></span>
+        </div>
+    <form id="home-filter-form" class="month-selector" action="/home" method="GET">
+        <label for="viewType">View:</label>
+        <select id="viewType" name="viewType">
+            <option value="daily" <%= viewType === 'daily' ? 'selected' : '' %>>Daily</option>
+            <option value="weekly" <%= viewType === 'weekly' ? 'selected' : '' %>>Weekly</option>
+            <option value="monthly" <%= viewType === 'monthly' ? 'selected' : '' %>>Monthly</option>
+        </select>
+        <% if (viewType === 'daily') { %>
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" value="<%= date %>" required>
+        <% } else if (viewType === 'monthly') { %>
+            <label for="month">Month:</label>
+            <input type="month" id="month" name="month" value="<%= month %>" required>
+        <% } else { %>
+            <label for="weekDate">Date in week:</label>
+            <input type="date" id="weekDate" name="weekDate" value="<%= weekDate %>" required>
+        <% } %>
+        <label for="tipsMonth">Tips period:</label>
+        <input type="month" id="tipsMonth" name="tipsMonth" value="<%= tipsMonth %>" required>
         <label for="department">Department:</label>
         <select id="department" name="department">
             <option value="all" <%= department === 'all' ? 'selected' : '' %>>All departments</option>
@@ -14,8 +36,10 @@
                 <option value="<%= item %>" <%= department === item ? 'selected' : '' %>><%= item %></option>
             <% }) %>
         </select>
-        <button type="submit">View Week</button>
+        <button type="submit" class="primary-button">View</button>
+        <a href="/home" id="reset-home-filters" class="secondary-button">Reset filters</a>
     </form>
+    </header>
     <div class="home-dashboard-layout">
         <main class="home-dashboard-main">
             <section class="dashboard-metrics">
@@ -25,16 +49,24 @@
         </div>
         <div class="metric-card">
             <strong><%= totalWage.toFixed(2) %></strong>
-            <span>Total wages for <%= week %></span>
+            <span>Total wages for <%= periodLabel %></span>
+        </div>
+        <div class="metric-card">
+            <strong>R <%= totalTurnover.toFixed(2) %></strong>
+            <span>Total turnover for <%= periodLabel %></span>
+        </div>
+        <div class="metric-card">
+            <strong>R <%= totalTips.toFixed(2) %></strong>
+            <span>Total tips for <%= tipPeriodLabel %></span>
         </div>
             </section>
             <section class="wage-chart" aria-label="Wage comparison graph">
         <div class="chart-heading">
             <div>
                 <p class="eyebrow">Wage overview</p>
-                <h2>Daily wages for the week</h2>
+                <h2><%= viewType[0].toUpperCase() + viewType.slice(1) %> wages</h2>
             </div>
-            <span><%= weekLabel %></span>
+            <span><%= periodLabel %></span>
         </div>
         <div class="bar-chart">
             <% wageGraph.forEach(period => { %>
@@ -51,87 +83,73 @@
             </section>
         </main>
         <aside class="dashboard-sidebar" aria-label="Dashboard inputs">
-            <section class="tips-panel">
-        <details>
-            <summary class="tips-summary">
-                <div class="chart-heading">
-                    <div>
-                        <p class="eyebrow">Tips</p>
-                        <h2>TIPS</h2>
-                    </div>
-                    <span><%= tipPeriodLabel %></span>
-                </div>
-            </summary>
-            <form action="/home/tips" method="POST" class="tips-form">
-                <input type="hidden" name="week" value="<%= week %>">
-                <input type="hidden" name="department" value="<%= department %>">
-                <div class="tips-toolbar">
-                    <label for="tipsMonth">Tip period ending 15th:</label>
-                    <input type="month" id="tipsMonth" name="tipsMonth" value="<%= tipsMonth %>" required>
-                    <button type="submit" class="primary-button">Save tips</button>
-                </div>
-                <div class="tips-toolbar tips-selection-toolbar">
-                    <label class="select-all-field">
-                        <input type="checkbox" id="selectAllTips">
-                        <span>Select all employees</span>
-                    </label>
-                    <strong>Total tips: R <%= totalTips.toFixed(2) %></strong>
-                </div>
-                <div class="tips-list">
-                    <% tipFigures.forEach(item => { %>
-                        <div class="tip-row">
-                            <label class="select-all-field">
-                                <input type="checkbox" name="selectedTipEmployees[]" value="<%= item.employee._id %>" class="tip-selector">
-                                <span><strong><%= item.employee.name %></strong> <small><%= item.employee.department %></small></span>
-                            </label>
-                            <label class="tip-amount-field">
-                                <span>Amount</span>
-                                <input type="number" name="tips[<%= item.employee._id %>]" min="0" step="0.01" value="<%= item.amount.toFixed(2) %>">
-                            </label>
-                        </div>
-                    <% }) %>
-                </div>
-            </form>
-        </details>
-            </section>
             <section class="daily-input-panel">
-        <details>
+                <div class="dashboard-input-heading">
+                    <p class="eyebrow">Payroll inputs</p>
+                    <h2><%= viewType[0].toUpperCase() + viewType.slice(1) %> staff inputs</h2>
+                    <span><%= periodLabel %></span>
+                </div>
+        <details class="hours-input-panel" open>
             <summary class="daily-input-summary">
                 <div class="chart-heading">
             <div>
-                <p class="eyebrow">Daily payroll input</p>
-                <h2>Daily Input</h2>
+                <p class="eyebrow">Hours, turnover, leave and tips</p>
+                <h2>Staff Inputs</h2>
             </div>
             <span><%= weekLabel %></span>
                 </div>
             </summary>
             <form action="/home" method="POST" class="dashboard-input-form">
+            <input type="hidden" name="viewType" value="<%= viewType %>">
+            <input type="hidden" name="date" value="<%= date %>">
+            <input type="hidden" name="weekDate" value="<%= weekDate %>">
+            <input type="hidden" name="month" value="<%= month %>">
             <input type="hidden" name="week" value="<%= week %>">
+            <input type="hidden" name="tipsMonth" value="<%= tipsMonth %>">
             <input type="hidden" name="department" value="<%= department %>">
             <div class="bulk-toolbar">
                 <label class="select-all-field">
                     <input type="checkbox" id="dashboardSelectAll">
                     <span>Select all employees</span>
                 </label>
-                <button type="submit" class="primary-button">Save daily figures</button>
+                    <button type="submit" class="primary-button">Save inputs</button>
             </div>
 
             <div class="dashboard-employee-list">
-                <% employeeFigures.forEach(item => { %>
-                    <article class="dashboard-employee-row">
+                <% employeeGroups.forEach(group => { %>
+                    <details class="dashboard-department-group <%= viewType === 'daily' ? 'daily-inline-blocks' : '' %>">
+                    <summary class="dashboard-department-heading">
+                        <h3><%= group.department %></h3>
+                        <span><%= group.employees.length %> employees</span>
+                    </summary>
+                <% group.employees.forEach(item => { %>
+                    <article class="dashboard-employee-row dashboard-employee-card">
                         <div class="dashboard-employee-heading">
                             <label class="select-all-field">
                                 <input type="checkbox" name="selectedEmployees[]" value="<%= item.employee._id %>" class="dashboard-employee-selector">
                                 <strong><%= item.employee.name %></strong>
                             </label>
-                            <span><%= item.employee.department %></span>
+                            <% if (['Waiter', 'Barista'].includes(item.employee.department)) { %>
+                                <label class="employee-tip-field">
+                                    <span>Tips</span>
+                                    <input type="number" name="employees[<%= item.employee._id %>][tips]" min="0" step="0.01" value="<%= item.tipAmount.toFixed(2) %>" aria-label="Tips for <%= item.employee.name %>">
+                                </label>
+                            <% } %>
                         </div>
-                        <div class="dashboard-day-grid">
+                        <div class="dashboard-employee-content">
+                        <div class="dashboard-day-grid-scroll">
+                        <div class="dashboard-day-grid period-days-<%= daysOfPeriod.length %>">
                             <% daysOfPeriod.forEach((day, index) => { %>
                                 <div class="dashboard-day-field">
-                                    <label for="dashboard-hours-<%= item.employee._id %>-<%= index %>"><%= day.label %> hours</label>
+                                    <div class="dashboard-day-heading">
+                                        <strong><%= day.label.split(' ')[0] %></strong>
+                                        <span><%= day.dateLabel %></span>
+                                    </div>
+                                    <label for="dashboard-hours-<%= item.employee._id %>-<%= index %>">Hours</label>
                                     <input type="number" id="dashboard-hours-<%= item.employee._id %>-<%= index %>" name="employees[<%= item.employee._id %>][dailyHours][<%= index %>]" min="0" step="0.25" value="<%= item.dailyHours[index] %>">
-                                    <label for="dashboard-leave-<%= item.employee._id %>-<%= index %>">Leave</label>
+                                    <label for="dashboard-turnover-<%= item.employee._id %>-<%= index %>">Turnover</label>
+                                    <input type="number" id="dashboard-turnover-<%= item.employee._id %>-<%= index %>" name="employees[<%= item.employee._id %>][dailyTurnover][<%= index %>]" min="0" step="0.01" value="<%= item.dailyTurnover[index].toFixed(2) %>">
+                                    <label for="dashboard-leave-<%= item.employee._id %>-<%= index %>">Leave status</label>
                                     <select id="dashboard-leave-<%= item.employee._id %>-<%= index %>" name="employees[<%= item.employee._id %>][leaveStatuses][<%= index %>]">
                                         <option value="none" <%= item.leaveStatuses[index] === 'none' ? 'selected' : '' %>>None</option>
                                         <option value="annual" <%= item.leaveStatuses[index] === 'annual' ? 'selected' : '' %>>Annual</option>
@@ -141,7 +159,11 @@
                                 </div>
                             <% }) %>
                         </div>
+                        </div>
+                        </div>
                     </article>
+                <% }) %>
+                    </details>
                 <% }) %>
             </div>
             </form>
@@ -151,7 +173,30 @@
     </div>
 
     <script>
+        const homeFilterKey = 'home-dashboard-filters';
+        const homeFilterForm = document.getElementById('home-filter-form');
+        const resetHomeFilters = document.getElementById('reset-home-filters');
         const params = new URLSearchParams(window.location.search);
+
+        if (!params.has('viewType') && !params.has('weekDate') && !params.has('week') && !params.has('month') && !params.has('date') && !params.has('department') && !params.has('tipsMonth')) {
+            const savedFilters = localStorage.getItem(homeFilterKey);
+            if (savedFilters) {
+                window.location.replace(`/home?${savedFilters}`);
+            }
+        } else {
+            const filterParams = new URLSearchParams(new FormData(homeFilterForm));
+            localStorage.setItem(homeFilterKey, filterParams.toString());
+        }
+
+        homeFilterForm?.addEventListener('submit', () => {
+            const filterParams = new URLSearchParams(new FormData(homeFilterForm));
+            localStorage.setItem(homeFilterKey, filterParams.toString());
+        });
+
+        resetHomeFilters?.addEventListener('click', () => {
+            localStorage.removeItem(homeFilterKey);
+        });
+
         if (params.get('alreadyLoggedIn') === '1') {
             alert('You are already logged in.');
         }
@@ -164,12 +209,5 @@
             });
         });
 
-        const selectAllTips = document.getElementById('selectAllTips');
-        const tipSelectors = document.querySelectorAll('.tip-selector');
-        selectAllTips?.addEventListener('change', () => {
-            tipSelectors.forEach((selector) => {
-                selector.checked = selectAllTips.checked;
-            });
-        });
     </script>
 <%- include("./includes/end.ejs") %>

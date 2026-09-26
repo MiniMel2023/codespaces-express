@@ -31,6 +31,10 @@
                                     <dd><%= employee.salaryPerHour %></dd>
                                 </div>
                                 <div>
+                                    <dt>Weekly turnover target</dt>
+                                    <dd><%= employee.turnoverTarget == null ? 'Not set' : 'R ' + employee.turnoverTarget.toFixed(2) %></dd>
+                                </div>
+                                <div>
                                     <dt>Hire Date</dt>
                                     <dd><%= employee.hireDate.toDateString() %></dd>
                                 </div>
@@ -43,24 +47,40 @@
                                     <dd><%= employee.incomeTaxNo %></dd>
                                 </div>
                                 <div>
+                                    <dt>Annual leave days per year</dt>
+                                    <dd><%= employee.annualLeaveDaysPerYear %></dd>
+                                </div>
+                                <div>
+                                    <dt>Unpaid leave days per year</dt>
+                                    <dd><%= employee.unpaidLeaveDaysPerYear %></dd>
+                                </div>
+                                <div>
+                                    <dt>OFF days per year</dt>
+                                    <dd><%= employee.offDaysPerYear ?? 'Not set' %></dd>
+                                </div>
+                                <div>
+                                    <dt>Work days per year</dt>
+                                    <dd><%= employee.workDaysPerYear ?? 'Not set' %></dd>
+                                </div>
+                                <div>
                                     <dt>Bank</dt>
-                                    <dd><%= employee.bankingDetails.bankName %></dd>
+                                    <dd><%= employee.bankingDetails?.bankName ?? 'Not set' %></dd>
                                 </div>
                                 <div>
                                     <dt>Account number</dt>
-                                    <dd><%= employee.bankingDetails.accountNumber %></dd>
+                                    <dd><%= employee.bankingDetails?.accountNumber ?? 'Not set' %></dd>
                                 </div>
                                 <div>
                                     <dt>Branch code</dt>
-                                    <dd><%= employee.bankingDetails.branchCode %></dd>
+                                    <dd><%= employee.bankingDetails?.branchCode ?? 'Not set' %></dd>
                                 </div>
                                 <div>
                                     <dt>UIF registration</dt>
-                                    <dd><%= employee.bankingDetails.UIFregNo %></dd>
+                                    <dd><%= employee.UIFregNo ?? employee.bankingDetails?.UIFregNo ?? 'Not set' %></dd>
                                 </div>
                                 <div>
                                     <dt>Sick days per year</dt>
-                                    <dd><%= employee.bankingDetails.sickDaysPerYear %></dd>
+                                    <dd><%= employee.sickDaysPerYear ?? employee.bankingDetails?.sickDaysPerYear ?? 'Not set' %></dd>
                                 </div>
                             </dl>
                             <div class="employee-actions">

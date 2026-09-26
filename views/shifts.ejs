@@ -1,0 +1,176 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <main class="dashboard-shell shift-dashboard">
+        <header class="dashboard-header">
+            <div>
+                <p class="eyebrow">Employee Details</p>
+                <h1>Shift Scheduling</h1>
+                <p class="payout-period">Roster week: <strong><%= weekLabel %></strong></p>
+            </div>
+            <form class="month-selector" action="/employee/shifts" method="GET">
+                <label for="week">Roster week:</label>
+                <input type="week" id="week" name="week" value="<%= week %>" required>
+                <label for="department">Department:</label>
+                <select id="department" name="department">
+                    <option value="all" <%= department === 'all' ? 'selected' : '' %>>All departments</option>
+                    <% departments.forEach(item => { %>
+                        <option value="<%= item %>" <%= department === item ? 'selected' : '' %>><%= item %></option>
+                    <% }) %>
+                </select>
+                <button type="submit" class="primary-button">View roster</button>
+            </form>
+        </header>
+
+        <section class="dashboard-metrics">
+            <article class="metric-card">
+                <span>Shift templates</span>
+                <strong><%= templates.length %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Scheduled shifts</span>
+                <strong><%= scheduledCount %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Open shifts</span>
+                <strong><%= Math.max(totalSlots - scheduledCount, 0) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Fairness limit</span>
+                <strong><%= formula.maxHours %> hrs</strong>
+            </article>
+        </section>
+
+        <form action="/employee/shifts" method="POST" class="schedule-form">
+            <input type="hidden" name="week" value="<%= week %>">
+            <input type="hidden" name="department" value="<%= department %>">
+            <section class="schedule-panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Weekly roster</p>
+                        <h2>Assign employees to shifts</h2>
+                    </div>
+                    <button type="button" class="secondary-button" id="applyRecommendations">Apply fair recommendations</button>
+                </div>
+                <% if (templates.length) { %>
+                    <div class="schedule-table-wrap">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>Shift</th>
+                                    <% daysOfWeek.forEach(day => { %><th><%= day.label %></th><% }) %>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% templates.forEach(template => { %>
+                                    <tr>
+                                        <th class="shift-label">
+                                            <strong><%= template.name %></strong>
+                                            <span><%= template.department %> | <%= template.startTime %>-<%= template.endTime %></span>
+                                        </th>
+                                        <% daysOfWeek.forEach((day, dayIndex) => { %>
+                                            <% const slotKey = `${dayIndex}:${template._id}`; %>
+                                            <% const selectedEmployee = assignmentMap.get(slotKey) || ''; %>
+                                            <% const recommendedEmployee = recommendations.get(slotKey) || ''; %>
+                                            <% const departmentStatuses = allEmployees
+                                                .filter(employee => employee.department === template.department)
+                                                .map(employee => ({ employee, status: employeeDayStatus.get(`${employee._id}:${dayIndex}`) }))
+                                                .filter(item => item.status && item.status !== 'Working'); %>
+                                            <td>
+                                                <select class="schedule-select" name="schedule[<%= template._id %>][<%= dayIndex %>]" data-recommended="<%= recommendedEmployee %>">
+                                                    <option value="">Open</option>
+                                                    <% allEmployees.filter(employee => employee.department === template.department).forEach(employee => { %>
+                                                        <% const employeeStatus = employeeDayStatus.get(`${employee._id}:${dayIndex}`); %>
+                                                        <option value="<%= employee._id %>" <%= selectedEmployee === employee._id.toString() ? 'selected' : '' %> <%= employeeStatus && employeeStatus.endsWith('leave') ? 'disabled' : '' %>><%= employee.name %><%= employeeStatus && employeeStatus !== 'Working' ? ` (${employeeStatus})` : '' %></option>
+                                                    <% }) %>
+                                                </select>
+                                                <% if (recommendedEmployee && recommendedEmployee !== selectedEmployee) { %>
+                                                    <% const recommended = allEmployees.find(employee => employee._id.toString() === recommendedEmployee); %>
+                                                    <small class="recommendation-note">Suggest: <%= recommended ? recommended.name : '' %></small>
+                                                <% } %>
+                                                <% if (departmentStatuses.length) { %>
+                                                    <small class="availability-note"><%= departmentStatuses.map(item => `${item.employee.name}: ${item.status}`).join(' | ') %></small>
+                                                <% } %>
+                                            </td>
+                                        <% }) %>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <p>Create a shift template above to start scheduling.</p>
+                <% } %>
+                <div class="schedule-actions">
+                    <button type="submit" class="primary-button">Save weekly roster</button>
+                    <span>Open slots stay unassigned and can be filled later.</span>
+                </div>
+            </section>
+
+            <aside class="fairness-panel">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Recommendation formula</p>
+                        <h2>Make fairness adjustable</h2>
+                    </div>
+                </div>
+                <p class="formula-copy">The recommendation favours employees with fewer scheduled hours and fewer shifts, while matching the shift department and avoiding double-booked days.</p>
+                <div class="formula-fields">
+                    <label>Hours weight<input type="number" name="hoursWeight" min="0" step="1" value="<%= formula.hoursWeight %>"></label>
+                    <label>Shift-count weight<input type="number" name="shiftsWeight" min="0" step="1" value="<%= formula.shiftsWeight %>"></label>
+                    <label>Maximum weekly hours<input type="number" name="maxHours" min="1" step="1" value="<%= formula.maxHours %>"></label>
+                </div>
+                <p class="formula-footnote">Higher weights have more influence. Save the roster after changing the formula to update suggestions for this week.</p>
+            </aside>
+        </form>
+
+        <details class="shift-map-panel shift-templates-dropdown">
+            <summary class="section-heading">
+                <div>
+                    <p class="eyebrow">Shift map</p>
+                    <h2>Shift Templates</h2>
+                </div>
+                <span class="summary-period"><%= templates.length ? 'Active templates' : 'Create your first template' %></span>
+            </summary>
+            <div class="shift-template-list">
+                <% templates.forEach(template => { %>
+                    <form class="shift-template-row" action="/employee/shifts/templates" method="POST">
+                        <input type="hidden" name="templateId" value="<%= template._id %>">
+                        <input type="hidden" name="week" value="<%= week %>">
+                        <label><span>Name</span><input name="name" value="<%= template.name %>" required></label>
+                        <label><span>Department</span><input name="department" value="<%= template.department %>" required></label>
+                        <label><span>Start</span><input type="time" name="startTime" value="<%= template.startTime %>" required></label>
+                        <label><span>End</span><input type="time" name="endTime" value="<%= template.endTime %>" required></label>
+                        <label><span>Break min</span><input type="number" name="breakMinutes" min="0" value="<%= template.breakMinutes %>"></label>
+                        <label><span>Colour</span><input type="color" name="color" value="<%= template.color %>"></label>
+                        <button type="submit" class="secondary-button">Save</button>
+                    </form>
+                <% }) %>
+            </div>
+            <form class="shift-template-row new-template-row" action="/employee/shifts/templates" method="POST">
+                <input type="hidden" name="week" value="<%= week %>">
+                <label><span>New shift name</span><input name="name" placeholder="Opening shift" required></label>
+                <label><span>Department</span><input name="department" placeholder="Waiter" required></label>
+                <label><span>Start</span><input type="time" name="startTime" value="08:00" required></label>
+                <label><span>End</span><input type="time" name="endTime" value="16:00" required></label>
+                <label><span>Break min</span><input type="number" name="breakMinutes" min="0" value="30"></label>
+                <label><span>Colour</span><input type="color" name="color" value="#2563eb"></label>
+                <button type="submit" class="secondary-button">Add template</button>
+            </form>
+        </details>
+    </main>
+    <script>
+        const applyRecommendations = document.getElementById('applyRecommendations');
+        if (applyRecommendations) {
+            applyRecommendations.addEventListener('click', () => {
+                document.querySelectorAll('.schedule-select').forEach((select) => {
+                    if (select.dataset.recommended) {
+                        select.value = select.dataset.recommended;
+                    }
+                });
+            });
+        }
+    </script>
+<%- include('./includes/end.ejs') %>

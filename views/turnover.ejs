@@ -1,0 +1,123 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <main class="dashboard-shell payout-page">
+        <header class="dashboard-header">
+            <div>
+                <p class="eyebrow">Payroll</p>
+                <h1>Turnover</h1>
+                <p class="payout-period"><%= period.charAt(0).toUpperCase() + period.slice(1) %> staff turnover: <strong><%= weekLabel %></strong></p>
+            </div>
+            <form class="turnover-filter" action="/payroll/turnover" method="GET">
+                <label class="turnover-filter-field" for="period">
+                    <span>View</span>
+                    <select id="period" name="period">
+                        <option value="daily" <%= period === 'daily' ? 'selected' : '' %>>Daily</option>
+                        <option value="weekly" <%= period === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                        <option value="monthly" <%= period === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                    </select>
+                </label>
+                <label class="turnover-filter-field" for="turnoverDate">
+                    <span>Tracking date</span>
+                    <input type="date" id="turnoverDate" name="date" value="<%= selectedDate %>" required>
+                </label>
+                <label class="turnover-filter-field" for="department">
+                    <span>Department</span>
+                    <select id="department" name="department">
+                    <option value="all" <%= department === 'all' ? 'selected' : '' %>>All departments</option>
+                    <% departments.forEach(item => { %>
+                        <option value="<%= item %>" <%= department === item ? 'selected' : '' %>><%= item %></option>
+                    <% }) %>
+                    </select>
+                </label>
+                <button type="submit" class="primary-button">View turnover</button>
+            </form>
+        </header>
+
+        <section class="dashboard-metrics">
+            <article class="metric-card">
+                <span>Total turnover</span>
+                <strong>R <%= totalTurnover.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Daily average</span>
+                <strong>R <%= averageDailyTurnover.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Employees</span>
+                <strong><%= turnoverRows.length %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Daily labour cost</span>
+                <strong>R <%= dailyLabourCost.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Weekly labour cost</span>
+                <strong>R <%= weeklyLabourCost.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Monthly labour cost</span>
+                <strong>R <%= monthlyLabourCost.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Turnover target</span>
+                <strong><%= totalTurnoverTarget > 0 ? 'R ' + totalTurnoverTarget.toFixed(2) : 'Not set' %></strong>
+            </article>
+        </section>
+
+        <section class="payout-table-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Daily turnover by employee</p>
+                    <h2>Staff turnover details</h2>
+                </div>
+            </div>
+            <% if (turnoverRows.length > 0) { %>
+                <div class="payout-table-wrap">
+                    <table class="payout-table">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Department</th>
+                                <% daysOfPeriod.forEach(day => { %>
+                                    <th><%= day.label %></th>
+                                <% }) %>
+                                <th>Total turnover</th>
+                                <th>Target</th>
+                                <th>Target result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% turnoverRows.forEach(row => { %>
+                                <tr>
+                                    <td><strong><%= row.employee.name %></strong></td>
+                                    <td><%= row.employee.department %></td>
+                                    <% row.dailyTurnover.forEach(amount => { %>
+                                        <td>R <%= amount.toFixed(2) %></td>
+                                    <% }) %>
+                                    <td><strong>R <%= row.totalTurnover.toFixed(2) %></strong></td>
+                                    <td><%= row.turnoverTarget > 0 ? 'R ' + row.turnoverTarget.toFixed(2) : 'Not set' %></td>
+                                    <td><%= row.targetAchievement === null ? 'Not set' : row.targetAchievement.toFixed(1) + '%' %></td>
+                                </tr>
+                            <% }) %>
+                            <tr>
+                                <td colspan="2"><strong>Daily total</strong></td>
+                                <% dailyTotals.forEach(day => { %>
+                                    <td><strong>R <%= day.amount.toFixed(2) %></strong></td>
+                                <% }) %>
+                                <td><strong>R <%= totalTurnover.toFixed(2) %></strong></td>
+                                <td><strong><%= totalTurnoverTarget > 0 ? 'R ' + totalTurnoverTarget.toFixed(2) : 'Not set' %></strong></td>
+                                <td><strong><%= targetAchievement === null ? 'Not set' : targetAchievement.toFixed(1) + '%' %></strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <p>No employees found for this department.</p>
+            <% } %>
+        </section>
+
+    </main>
+<%- include('./includes/end.ejs') %>

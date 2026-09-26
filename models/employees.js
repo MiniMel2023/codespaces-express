@@ -14,14 +14,6 @@ const bankingDetailsSchema = new Schema({
   branchCode: {
     type: String,
     required: true
-  },
-  UIFregNo: {
-    type: String,
-    required: true
-  },
-  sickDaysPerYear: {
-    type: Number,
-    required: true
   }
 }, { _id: false });
 
@@ -38,6 +30,11 @@ const employeeSchema = new Schema({
     type: Number,
     required: true
   },
+  turnoverTarget: {
+    type: Number,
+    min: 0,
+    default: null
+  },
   hireDate: {
     type: Date,
     required: true
@@ -50,6 +47,30 @@ const employeeSchema = new Schema({
     type: String,
     required: true
   },
+  annualLeaveDaysPerYear: {
+    type: Number,
+    required: true
+  },
+  unpaidLeaveDaysPerYear: {
+    type: Number,
+    required: true
+  },
+  offDaysPerYear: {
+    type: Number,
+    required: true
+  },
+  workDaysPerYear: {
+    type: Number,
+    required: true
+  },
+  UIFregNo: {
+    type: String,
+    required: true
+  },
+  sickDaysPerYear: {
+    type: Number,
+    required: true
+  }, 
   bankingDetails: {
     type: bankingDetailsSchema,
     required: true,

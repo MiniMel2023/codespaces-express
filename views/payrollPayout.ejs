@@ -56,8 +56,9 @@
                                 <th>Employee</th>
                                 <th>Department</th>
                                 <th>Weekly wages</th>
-                                <th>Tips</th>
+                                <th>Tips / kitchen share</th>
                                 <th>Total payout</th>
+                                <th>Payslip</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -68,6 +69,9 @@
                                     <td>R <%= row.wageAmount.toFixed(2) %></td>
                                     <td>R <%= row.tipAmount.toFixed(2) %></td>
                                     <td><strong>R <%= row.totalPayout.toFixed(2) %></strong></td>
+                                    <td>
+                                        <a class="secondary-button" href="/payroll/payout/<%= row.employee._id %>/pdf?week=<%= week %>&tipsMonth=<%= tipsMonth %>">Download PDF</a>
+                                    </td>
                                 </tr>
                             <% }) %>
                         </tbody>

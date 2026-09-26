@@ -7,8 +7,6 @@
     <form action="/employee/add-employee" method="POST">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br><br>
-        <label for="position">Position:</label>
-        <input type="text" id="position" name="position" required><br><br>
         <label for="department">Department:</label>
         <select id="department" name="department" required>
             <option value="Owner">Owner</option>
@@ -21,16 +19,26 @@
         </select><br><br>
         <label for="salaryPerHour">Salary per hour:</label>
         <input type="number" id="salaryPerHour" name="salaryPerHour" required><br><br>
+        <label for="turnoverTarget">Weekly turnover target (optional):</label>
+        <input type="number" id="turnoverTarget" name="turnoverTarget" min="0" step="0.01"><br><br>
         <label for="hireDate">Hire Date:</label>
         <input type="date" id="hireDate" name="hireDate" required><br><br>
         <label for="IDnumber">ID number:</label>
         <input type="text" id="IDnumber" name="IDnumber" required><br><br>
         <label for="incomeTaxNo">Income tax number:</label>
         <input type="text" id="incomeTaxNo" name="incomeTaxNo" required><br><br>
+        <label for="annualLeaveDaysPerYear">Annual leave days per year:</label>
+        <input type="number" id="annualLeaveDaysPerYear" name="annualLeaveDaysPerYear" min="0" required><br><br>
+        <label for="unpaidLeaveDaysPerYear">Unpaid leave days per year:</label>
+        <input type="number" id="unpaidLeaveDaysPerYear" name="unpaidLeaveDaysPerYear" min="0" required><br><br>
+        <label for="offDaysPerYear">OFF Days per year:</label>
+        <input type="number" id="offDaysPerYear" name="offDaysPerYear" min="0" required><br><br>
+        <label for="workDaysPerYear">Work Days per year:</label>
+        <input type="number" id="workDaysPerYear" name="workDaysPerYear" min="0" required><br><br>
         <label for="UIFregNo">UIF registration number:</label>
-        <input type="text" id="UIFregNo" name="bankingDetails[UIFregNo]" required><br><br>
+        <input type="text" id="UIFregNo" name="UIFregNo" required><br><br>
         <label for="sickDaysPerYear">Sick days per year:</label>
-        <input type="number" id="sickDaysPerYear" name="bankingDetails[sickDaysPerYear]" required><br><br>
+        <input type="number" id="sickDaysPerYear" name="sickDaysPerYear" required><br><br>
         <fieldset>
             <legend>Banking Details</legend>
             <label for="bankName">Bank name:</label>
