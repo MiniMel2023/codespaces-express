@@ -11,11 +11,12 @@ const employeeRoutes = require('./routes/employeeRecords');
 const wageTrackerRoutes = require('./routes/wageTracker');
 const payrollRoutes = require('./routes/payrollPayout');
 const authRoutes = require('./routes/auth');
+const profitLossRoutes = require('./routes/profitLoss');
 
 const User = require('./models/user');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
@@ -52,6 +53,7 @@ app.use('/auth', authRoutes);
 app.use('/employee', employeeRoutes);
 app.use('/wage-tracker', wageTrackerRoutes);
 app.use('/payroll', payrollRoutes);
+app.use('/profitLoss', profitLossRoutes);
 
 
 

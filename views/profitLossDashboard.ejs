@@ -1,0 +1,281 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <main class="dashboard-shell">
+        <header class="dashboard-header">
+            <div>
+                <p class="eyebrow">Business overview</p>
+                <h1>Profit &amp; Loss</h1>
+                <p class="payout-period">Showing <strong><%= periodLabel %></strong></p>
+            </div>
+            <form class="turnover-filter" action="/profitLoss" method="GET">
+                <label class="turnover-filter-field" for="viewType">
+                    <span>View</span>
+                    <select id="viewType" name="viewType">
+                        <option value="daily" <%= viewType === 'daily' ? 'selected' : '' %>>Daily</option>
+                        <option value="weekly" <%= viewType === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                        <option value="monthly" <%= viewType === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                    </select>
+                </label>
+                <% if (viewType === 'daily') { %>
+                    <label class="turnover-filter-field" for="date">
+                        <span>Date</span>
+                        <input type="date" id="date" name="date" value="<%= date %>" required>
+                    </label>
+                <% } else if (viewType === 'monthly') { %>
+                    <label class="turnover-filter-field" for="month">
+                        <span>Month</span>
+                        <input type="month" id="month" name="month" value="<%= month %>" required>
+                    </label>
+                <% } else { %>
+                    <label class="turnover-filter-field" for="weekDate">
+                        <span>Date in week</span>
+                        <input type="date" id="weekDate" name="weekDate" value="<%= weekDate %>" required>
+                    </label>
+                <% } %>
+                <button type="submit" class="primary-button">View report</button>
+                <a href="/profitLoss" class="secondary-button">Reset</a>
+            </form>
+        </header>
+
+        <section class="dashboard-metrics" aria-label="Profit and loss summary">
+            <article class="metric-card">
+                <span>Turnover</span>
+                <strong>R <%= totalTurnover.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Labour cost</span>
+                <strong>R <%= totalLabourCost.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Recorded expenses</span>
+                <strong id="period-expenses-total">R <%= totalExpenses.toFixed(2) %></strong>
+            </article>
+            <article id="net-profit-card" class="metric-card <%= netProfit >= 0 ? 'profit-positive' : 'profit-negative' %>">
+                <span id="net-profit-label"><%= netProfit >= 0 ? 'Net profit' : 'Net loss' %></span>
+                <strong id="net-profit-value">R <%= Math.abs(netProfit).toFixed(2) %></strong>
+            </article>
+        </section>
+        <p class="profit-loss-note">Net profit/loss is turnover minus recorded labour cost and expenses. Tips and unrecorded business costs are not included.</p>
+
+        <section class="wage-chart profit-loss-chart" aria-label="Turnover, labour cost and expenses by day">
+            <div class="chart-heading">
+                <div>
+                    <p class="eyebrow">Period breakdown</p>
+                    <h2>Daily performance</h2>
+                </div>
+                <span><%= periodLabel %></span>
+            </div>
+            <div class="profit-loss-legend" aria-label="Chart legend">
+                <span><i class="legend-turnover"></i>Turnover</span>
+                <span><i class="legend-labour"></i>Labour</span>
+                <span><i class="legend-expenses"></i>Expenses</span>
+            </div>
+            <div class="profit-loss-chart-scroll">
+                <div class="profit-loss-chart-grid" style="grid-template-columns: repeat(<%= dailySummaries.length %>, minmax(4.5rem, 1fr))">
+                    <% dailySummaries.forEach(day => { %>
+                        <div class="profit-loss-chart-day" data-date="<%= day.date %>" title="<%= day.dateLabel %>">
+                            <div class="profit-loss-chart-bars">
+                                <span class="profit-loss-chart-bar chart-turnover" data-amount="<%= day.turnover %>" style="height: <%= day.turnover > 0 ? Math.max((day.turnover / chartMax) * 100, 3) : 0 %>%" title="Turnover R <%= day.turnover.toFixed(2) %>"></span>
+                                <span class="profit-loss-chart-bar chart-labour" data-amount="<%= day.labourCost %>" style="height: <%= day.labourCost > 0 ? Math.max((day.labourCost / chartMax) * 100, 3) : 0 %>%" title="Labour R <%= day.labourCost.toFixed(2) %>"></span>
+                                <span class="profit-loss-chart-bar chart-expenses" data-amount="<%= day.expenses %>" style="height: <%= day.expenses > 0 ? Math.max((day.expenses / chartMax) * 100, 3) : 0 %>%" title="Expenses R <%= day.expenses.toFixed(2) %>"></span>
+                            </div>
+                            <strong><%= day.label %></strong>
+                            <small><%= day.dateLabel %></small>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        </section>
+
+        <section class="payout-table-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Cost tracking</p>
+                    <h2>Add an expense</h2>
+                </div>
+            </div>
+            <form id="expense-entry-form" class="turnover-filter expense-form" action="/profitLoss/expenses" method="POST" data-day="<%= expenseDate %>" data-period-start="<%= expenseStart.toISOString().slice(0, 10) %>" data-period-end="<%= expenseEnd.toISOString().slice(0, 10) %>">
+                <input type="hidden" name="viewType" value="<%= viewType %>">
+                <input type="hidden" name="date" value="<%= date %>">
+                <input type="hidden" name="weekDate" value="<%= weekDate %>">
+                <input type="hidden" name="month" value="<%= month %>">
+                <label class="turnover-filter-field" for="expenseCategory">
+                    <span>Category</span>
+                    <select id="expenseCategory" name="category" required>
+                        <option value="">Choose a category</option>
+                        <% expenseCategoryOptions.forEach(category => { %>
+                            <option value="<%= category %>"><%= category %></option>
+                        <% }) %>
+                    </select>
+                </label>
+                <label class="turnover-filter-field" for="expenseDescription">
+                    <span>Description</span>
+                    <select id="expenseDescription" name="description" required disabled>
+                        <option value="">Choose a category first</option>
+                        <% Object.entries(expenseDescriptionOptions).forEach(([category, descriptions]) => { %>
+                            <% descriptions.forEach(description => { %>
+                                <option value="<%= description %>" data-category="<%= category %>" hidden><%= description %></option>
+                            <% }) %>
+                        <% }) %>
+                    </select>
+                </label>
+                <label class="turnover-filter-field" for="expenseAmount">
+                    <span>Amount (R)</span>
+                    <input type="number" id="expenseAmount" name="amount" min="0.01" step="0.01" required>
+                </label>
+                <label class="turnover-filter-field" for="expenseInvoiceNumber">
+                    <span>Invoice Number</span>
+                    <input type="text" id="expenseInvoiceNumber" name="invoiceNumber" required>
+                </label>
+                <label class="turnover-filter-field" for="expenseDate">
+                    <span>Expense date</span>
+                    <input type="date" id="expenseDate" name="incurredAt" value="<%= expenseDate %>" required>
+                </label>
+                <button type="submit" class="primary-button">Save expense</button>
+            </form>
+            <p id="expense-entry-error" class="form-error" role="alert" hidden></p>
+        </section>
+
+        <section class="payout-table-panel live-expenses-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Daily expense log</p>
+                    <h2>Expenses added for <%= expenseDate %></h2>
+                </div>
+                <strong id="live-expense-total">R <%= liveExpenseTotal.toFixed(2) %></strong>
+            </div>
+            <div class="payout-table-wrap">
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Invoice</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="live-expense-rows">
+                        <% if (liveExpenses.length) { %>
+                            <% liveExpenses.forEach(expense => { %>
+                                <tr>
+                                    <td><%= expense.category %></td>
+                                    <td><%= expense.description %></td>
+                                    <td><%= expense.invoiceNumber || '—' %></td>
+                                    <td><strong>R <%= expense.amount.toFixed(2) %></strong></td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr id="live-expense-empty">
+                                <td colspan="4">No expenses added for this day yet.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <p class="profit-loss-note">New expenses appear here as soon as they are saved.</p>
+        </section>
+
+    </main>
+    <script>
+        const expenseCategorySelect = document.getElementById('expenseCategory');
+        const expenseDescriptionSelect = document.getElementById('expenseDescription');
+        const expenseDescriptionOptions = expenseDescriptionSelect.querySelectorAll('option[data-category]');
+        const expenseEntryForm = document.getElementById('expense-entry-form');
+        const expenseEntryError = document.getElementById('expense-entry-error');
+        const liveExpenseRows = document.getElementById('live-expense-rows');
+        const liveExpenseTotal = document.getElementById('live-expense-total');
+        const periodExpensesTotal = document.getElementById('period-expenses-total');
+        const netProfitCard = document.getElementById('net-profit-card');
+        const netProfitLabel = document.getElementById('net-profit-label');
+        const netProfitValue = document.getElementById('net-profit-value');
+        let currentDayExpenseTotal = <%= liveExpenseTotal %>;
+        let currentPeriodExpenseTotal = <%= totalExpenses %>;
+        let currentNetProfit = <%= netProfit %>;
+
+        const updateChart = (date, amount) => {
+            const dayColumn = document.querySelector(`.profit-loss-chart-day[data-date="${date}"]`);
+            if (!dayColumn) return;
+            const expenseBar = dayColumn.querySelector('.chart-expenses');
+            expenseBar.dataset.amount = String(Number(expenseBar.dataset.amount) + amount);
+            expenseBar.title = `Expenses R ${Number(expenseBar.dataset.amount).toFixed(2)}`;
+            const chartBars = [...document.querySelectorAll('.profit-loss-chart-bar')];
+            const maxAmount = Math.max(...chartBars.map((bar) => Number(bar.dataset.amount)), 1);
+            chartBars.forEach((bar) => {
+                const barAmount = Number(bar.dataset.amount);
+                bar.style.height = `${barAmount > 0 ? Math.max((barAmount / maxAmount) * 100, 3) : 0}%`;
+            });
+        };
+
+        expenseCategorySelect.addEventListener('change', () => {
+            const selectedCategory = expenseCategorySelect.value;
+            expenseDescriptionSelect.value = '';
+            expenseDescriptionSelect.disabled = !selectedCategory;
+            expenseDescriptionOptions.forEach((option) => {
+                option.hidden = option.dataset.category !== selectedCategory;
+            });
+            expenseDescriptionSelect.options[0].textContent = selectedCategory
+                ? 'Choose a description'
+                : 'Choose a category first';
+        });
+
+        expenseEntryForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const submitButton = expenseEntryForm.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            expenseEntryError.hidden = true;
+
+            try {
+                const response = await fetch(expenseEntryForm.action, {
+                    method: 'POST',
+                    headers: { Accept: 'application/json' },
+                    body: new URLSearchParams(new FormData(expenseEntryForm))
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || 'Unable to save the expense.');
+
+                const addedDate = result.incurredAt.slice(0, 10);
+                const periodStart = expenseEntryForm.dataset.periodStart;
+                const periodEnd = expenseEntryForm.dataset.periodEnd;
+                if (addedDate >= periodStart && addedDate < periodEnd) {
+                    currentPeriodExpenseTotal += Number(result.amount);
+                    currentNetProfit -= Number(result.amount);
+                    periodExpensesTotal.textContent = `R ${currentPeriodExpenseTotal.toFixed(2)}`;
+                    netProfitCard.classList.toggle('profit-positive', currentNetProfit >= 0);
+                    netProfitCard.classList.toggle('profit-negative', currentNetProfit < 0);
+                    netProfitLabel.textContent = currentNetProfit >= 0 ? 'Net profit' : 'Net loss';
+                    netProfitValue.textContent = `R ${Math.abs(currentNetProfit).toFixed(2)}`;
+                    updateChart(addedDate, Number(result.amount));
+                }
+                if (addedDate === expenseEntryForm.dataset.day) {
+                    document.getElementById('live-expense-empty')?.remove();
+                    const row = document.createElement('tr');
+                    [result.category, result.description, result.invoiceNumber].forEach((value) => {
+                        const cell = document.createElement('td');
+                        cell.textContent = value;
+                        row.appendChild(cell);
+                    });
+                    const amountCell = document.createElement('td');
+                    const amount = document.createElement('strong');
+                    amount.textContent = `R ${Number(result.amount).toFixed(2)}`;
+                    amountCell.appendChild(amount);
+                    row.appendChild(amountCell);
+                    liveExpenseRows.prepend(row);
+                    currentDayExpenseTotal += Number(result.amount);
+                    liveExpenseTotal.textContent = `R ${currentDayExpenseTotal.toFixed(2)}`;
+                }
+                expenseEntryForm.reset();
+                expenseDescriptionSelect.disabled = true;
+                expenseDescriptionOptions.forEach((option) => { option.hidden = true; });
+                expenseDescriptionSelect.options[0].textContent = 'Choose a category first';
+            } catch (error) {
+                expenseEntryError.textContent = error.message;
+                expenseEntryError.hidden = false;
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+<%- include('./includes/end.ejs') %>

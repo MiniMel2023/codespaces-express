@@ -23,6 +23,16 @@
                         </ul>
                     </details>
                 </li>
+                <li class="main-header_item main-header_submenu">
+                    <details <%= path.startsWith('/profitLoss') ? 'open' : '' %>>
+                        <summary class="<%= path.startsWith('/profitLoss') ? 'active' : '' %>">Profit/Loss</summary>
+                        <ul class="main-header_submenu-list">
+                            <li><a class="<%= path === '/profitLoss' ? 'active' : '' %>" href="/profitLoss">Dashboard</a></li>
+                            <li><a class="<%= path === '/profitLoss/expenses' ? 'active' : '' %>" href="/profitLoss/expenses">Expenses Projection</a></li>
+                            <li><a class="<%= path === '/profitLoss/suppliers' ? 'active' : '' %>" href="/profitLoss/suppliersDetails">Supplier Details</a></li>
+                        </ul>
+                    </details>
+                </li>
             <% } %> 
         </ul>
         <ul class="main-header_item-list <%= isAuthenticated ? 'main-header_auth-list-right' : '' %>">

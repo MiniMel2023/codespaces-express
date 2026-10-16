@@ -1,0 +1,115 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <main class="dashboard-shell">
+        <header class="dashboard-header">
+            <div>
+                <p class="eyebrow">Profit &amp; Loss</p>
+                <h1>Expense Projection</h1>
+                <p class="payout-period">Recorded expenses for <strong><%= periodLabel %></strong></p>
+            </div>
+            <form class="turnover-filter" action="/profitLoss/expenses" method="GET">
+                <label class="turnover-filter-field" for="viewType">
+                    <span>View</span>
+                    <select id="viewType" name="viewType">
+                        <option value="daily" <%= viewType === 'daily' ? 'selected' : '' %>>Daily</option>
+                        <option value="weekly" <%= viewType === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                        <option value="monthly" <%= viewType === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                    </select>
+                </label>
+                <% if (viewType === 'daily') { %>
+                    <label class="turnover-filter-field" for="date">
+                        <span>Date</span>
+                        <input type="date" id="date" name="date" value="<%= date %>" required>
+                    </label>
+                <% } else if (viewType === 'monthly') { %>
+                    <label class="turnover-filter-field" for="month">
+                        <span>Month</span>
+                        <input type="month" id="month" name="month" value="<%= month %>" required>
+                    </label>
+                <% } else { %>
+                    <label class="turnover-filter-field" for="weekDate">
+                        <span>Date in week</span>
+                        <input type="date" id="weekDate" name="weekDate" value="<%= weekDate %>" required>
+                    </label>
+                <% } %>
+                <label class="turnover-filter-field" for="categoryFilter">
+                    <span>Category</span>
+                    <select id="categoryFilter" name="categoryFilter">
+                        <option value="all" <%= categoryFilter === 'all' ? 'selected' : '' %>>All categories</option>
+                        <% expenseCategories.forEach(category => { %>
+                            <option value="<%= category %>" <%= categoryFilter === category ? 'selected' : '' %>><%= category %></option>
+                        <% }) %>
+                    </select>
+                </label>
+                <button type="submit" class="primary-button">View expenses</button>
+            </form>
+        </header>
+
+        <section class="dashboard-metrics" aria-label="Expense summary">
+            <article class="metric-card">
+                <span>Recorded expenses</span>
+                <strong>R <%= totalExpenses.toFixed(2) %></strong>
+            </article>
+            <article class="metric-card">
+                <span>Expense entries</span>
+                <strong><%= expenses.length %></strong>
+            </article>
+        </section>
+
+        <section class="payout-table-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Selected period</p>
+                    <h2>Expense details</h2>
+                </div>
+            </div>
+            <% if (expenses.length) { %>
+                <div class="payout-table-wrap">
+                    <table class="payout-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Invoice</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% expenses.forEach(expense => { %>
+                                <tr>
+                                    <td><%= expense.incurredAt.toLocaleDateString('en-GB', { timeZone: 'UTC' }) %></td>
+                                    <td><%= expense.category %></td>
+                                    <td><%= expense.description %></td>
+                                    <td><%= expense.invoiceNumber || '—' %></td>
+                                    <td><strong>R <%= expense.amount.toFixed(2) %></strong></td>
+                                    <td>
+                                        <form action="/profitLoss/expenses/<%= expense._id %>/delete" method="POST">
+                                            <input type="hidden" name="returnTo" value="projection">
+                                            <input type="hidden" name="viewType" value="<%= viewType %>">
+                                            <input type="hidden" name="date" value="<%= date %>">
+                                            <input type="hidden" name="weekDate" value="<%= weekDate %>">
+                                            <input type="hidden" name="month" value="<%= month %>">
+                                            <input type="hidden" name="categoryFilter" value="<%= categoryFilter %>">
+                                            <button type="submit" class="secondary-button">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                            <tr>
+                                <td colspan="4"><strong>Total expenses</strong></td>
+                                <td colspan="2"><strong>R <%= totalExpenses.toFixed(2) %></strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <p>No expenses recorded for this period and category.</p>
+            <% } %>
+        </section>
+    </main>
+<%- include('./includes/end.ejs') %>
