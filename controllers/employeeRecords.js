@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const Employee = require('../models/employees');
 const WageTracker = require('./wageTracker');
 

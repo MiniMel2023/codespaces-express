@@ -29,7 +29,7 @@
                         <ul class="main-header_submenu-list">
                             <li><a class="<%= path === '/profitLoss' ? 'active' : '' %>" href="/profitLoss">Dashboard</a></li>
                             <li><a class="<%= path === '/profitLoss/expenses' ? 'active' : '' %>" href="/profitLoss/expenses">Expenses Projection</a></li>
-                            <li><a class="<%= path === '/profitLoss/suppliers' ? 'active' : '' %>" href="/profitLoss/suppliersDetails">Supplier Details</a></li>
+                            <li><a class="<%= path.startsWith('/profitLoss/suppliersDetails') || path.startsWith('/supplierDetails') ? 'active' : '' %>" href="/profitLoss/suppliersDetails">Supplier Details</a></li>
                         </ul>
                     </details>
                 </li>

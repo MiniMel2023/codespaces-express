@@ -1,0 +1,66 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <h1>Edit Supplier Details</h1>
+    <form action="<%= basePath %>/edit/<%= supplier._id %>" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="<%= supplier.name %>" required><br><br>
+        <label for="category">Category:</label>
+        <select id="category" name="category" required>
+            <option value="Food" <%= supplier.category === 'Food' ? 'selected' : '' %>>Food</option>
+            <option value="Non Food" <%= supplier.category === 'Non Food' ? 'selected' : '' %>>Non Food</option>
+            <option value="Beverages" <%= supplier.category === 'Beverages' ? 'selected' : '' %>>Beverages</option>
+             <% if (!['Food', 'Non Food', 'Beverages'].includes(supplier.category)) { %>
+                <option value="<%= supplier.category %>" selected><%= supplier.category %></option>
+            <% } %>
+        </select><br><br>
+        <label for="customerAccountNumber">Customer Account Number:</label>
+        <input type="number" id="customerAccountNumber" name="customerAccountNumber" value="<%= supplier.customerAccountNumber %>" required><br><br>
+        <label for="contactPerson">Contact Person:</label>
+        <input type="text" id="contactPerson" name="contactPerson" value="<%= supplier.contactPerson %>"><br><br>
+        <label for="contactEmail">Contact Email:</label>
+        <input type="text" id="contactEmail" name="contactEmail" value="<%= supplier.contactEmail %>" required><br><br>
+        <label for="phoneOne">Phone 1:</label>
+        <input type="number" id="phoneOne" name="phoneOne" value="<%= supplier.phoneOne %>" required><br><br>
+        <label for="phoneTwo">Phone 2:</label>
+        <input type="number" id="phoneTwo" name="phoneTwo" value="<%= supplier.phoneTwo %>" required><br><br>
+        <label for="deliveryDays">Delivery Days:</label>
+        <input type="number" id="deliveryDays" name="deliveryDays" value="<%= supplier.deliveryDays %>" required><br><br>
+        <label for="orderLeadTime">Order lead time:</label>
+        <input type="number" id="orderLeadTime" name="orderLeadTime" value="<%= supplier.orderLeadTime %>" required><br><br>
+        <label for="MOQWithoutDeliveryFee">MOQ Without Delivery Fee:</label>
+        <input type="number" id="MOQWithoutDeliveryFee" name="MOQWithoutDeliveryFee" value="<%= supplier.MOQWithoutDeliveryFee %>" min="0" required><br><br>
+        <label for="OnlineOrderPlattform">Online oder plattform:</label>
+        <input type="text" id="OnlineOrderPlattform" name="OnlineOrderPlattform" value="<%= supplier.OnlineOrderPlattform %>" required><br><br>
+        <label for="platformPassword">Platform Password:</label>
+        <input type="number" id="platformPassword" name="platformPassword" value="<%= supplier.platformPassword %>" required><br><br>
+        <label for="orderEmail">Order Email:</label>
+        <input type="text" id="orderEmail" name="orderEmail" value="<%= supplier.orderEmail %>" required><br><br>
+        <label for="orderEmail2">Order Email 2:</label>
+        <input type="text" id="orderEmail2" name="orderEmail2" value="<%= supplier.orderEmail2 %>" required><br><br>
+        <label for="paymentTerms">Payment terms in days after receiving an invoice:</label>
+        <input type="number" id="paymentTerms" name="paymentTerms" value="<%= supplier.paymentTerms %>" required><br><br>
+        <label for="accountingContact">Accounting Contact:</label>
+        <input type="text" id="accountingContact" name="accountingContact" value="<%= supplier.accountingContact %>" required><br><br>
+        <label for="accountingEmail">Accounting Email:</label>
+        <input type="text" id="accountingEmail" name="accountingEmail" value="<%= supplier.accountingEmail %>" required><br><br>
+        <label for="accountingPhone">Accounting Phone:</label>
+        <input type="number" id="accountingPhone" name="accountingPhone" value="<%= supplier.accountingPhone %>" required><br><br>
+        <fieldset>
+            <legend>Banking Details</legend>
+            <label for="bankName">Bank name:</label>
+            <input type="text" id="bankName" name="bankingDetails[bankName]" value="<%= supplier.bankingDetails?.bankName ?? '' %>" required><br><br>
+            <label for="accountHolder">Account Holder:</label>
+            <input type="text" id="accountHolder" name="bankingDetails[accountHolder]" value="<%= supplier.bankingDetails?.accountHolder ?? '' %>" required><br><br>
+            <label for="accountNumber">Account Number:</label>
+            <input type="number" id="accountNumber" name="bankingDetails[accountNumber]" value="<%= supplier.bankingDetails?.accountNumber ?? '' %>" required><br><br>
+            <label for="branchCode">Branch code:</label>
+            <input type="text" id="branchCode" name="bankingDetails[branchCode]" value="<%= supplier.bankingDetails?.branchCode ?? '' %>" required><br><br>
+            <label for="accountType">Account Type:</label>
+            <input type="text" id="accountType" name="bankingDetails[accountType]" value="<%= supplier.bankingDetails?.accountType ?? '' %>" required><br><br>
+        </fieldset>
+        <button type="submit">Save Changes</button>
+    </form>
+<%- include("./includes/end.ejs") %>

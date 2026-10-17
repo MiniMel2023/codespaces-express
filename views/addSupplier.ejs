@@ -1,0 +1,63 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <h1>Add New Supplier</h1>
+    <form action="<%= basePath %>/add" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="category">Category:</label>
+        <select id="category" name="category" required>
+            <option value="Food">Food</option>
+            <option value="Non Food">Non Food</option>
+            <option value="Beverages">Beverages</option>
+        </select><br><br>
+        <label for="customerAccountNumber">Customer Account Number:</label>
+        <input type="number" id="customerAccountNumber" name="customerAccountNumber" required><br><br>
+        <label for="contactPerson">Contact Person:</label>
+        <input type="text" id="contactPerson" name="contactPerson"><br><br>
+        <label for="contactEmail">Contact Email:</label>
+        <input type="text" id="contactEmail" name="contactEmail" required><br><br>
+        <label for="phoneOne">Phone 1:</label>
+        <input type="number" id="phoneOne" name="phoneOne" required><br><br>
+        <label for="phoneTwo">Phone 2:</label>
+        <input type="number" id="phoneTwo" name="phoneTwo" required><br><br>
+        <label for="deliveryDays">Delivery Days:</label>
+        <input type="number" id="deliveryDays" name="deliveryDays" required><br><br>
+        <label for="orderLeadTime">Order lead time:</label>
+        <input type="number" id="orderLeadTime" name="orderLeadTime" required><br><br>
+        <label for="MOQWithoutDeliveryFee">MOQ Without Delivery Fee:</label>
+        <input type="number" id="MOQWithoutDeliveryFee" name="MOQWithoutDeliveryFee" min="0" required><br><br>
+        <label for="OnlineOrderPlattform">Online oder plattform:</label>
+        <input type="text" id="OnlineOrderPlattform" name="OnlineOrderPlattform" required><br><br>
+        <label for="platformPassword">Platform Password:</label>
+        <input type="number" id="platformPassword" name="platformPassword" required><br><br>
+        <label for="orderEmail">Order Email:</label>
+        <input type="text" id="orderEmail" name="orderEmail" required><br><br>
+        <label for="orderEmail2">Order Email 2:</label>
+        <input type="text" id="orderEmail2" name="orderEmail2" required><br><br>
+        <label for="paymentTerms">Payment terms in days after receiving an invoice:</label>
+        <input type="number" id="paymentTerms" name="paymentTerms" required><br><br>
+        <label for="accountingContact">Accounting Contact:</label>
+        <input type="text" id="accountingContact" name="accountingContact" required><br><br>
+        <label for="accountingEmail">Accounting Email:</label>
+        <input type="text" id="accountingEmail" name="accountingEmail" required><br><br>
+        <label for="accountingPhone">Accounting Phone:</label>
+        <input type="number" id="accountingPhone" name="accountingPhone" required><br><br>
+        <fieldset>
+            <legend>Banking Details</legend>
+            <label for="bankName">Bank name:</label>
+            <input type="text" id="bankName" name="bankingDetails[bankName]" required><br><br>
+            <label for="accountHolder">Account Holder:</label>
+            <input type="text" id="accountHolder" name="bankingDetails[accountHolder]" required><br><br>
+            <label for="accountNumber">Account Number:</label>
+            <input type="number" id="accountNumber" name="bankingDetails[accountNumber]" required><br><br>
+            <label for="branchCode">Branch code:</label>
+            <input type="text" id="branchCode" name="bankingDetails[branchCode]" required><br><br>
+            <label for="accountType">Account Type:</label>
+            <input type="text" id="accountType" name="bankingDetails[accountType]" required><br><br>
+            </fieldset>
+        <button type="submit">Add Supplier</button>
+    </form>
+<%- include("./includes/end.ejs") %>

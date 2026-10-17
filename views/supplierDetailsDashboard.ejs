@@ -1,0 +1,139 @@
+<%- include('./includes/head.ejs') %>
+<%- include('./includes/nav.ejs') %>
+
+</head>
+<body>
+    <h1>Supplier Records</h1>
+
+    <div>
+        <form action="<%= basePath %>/add" method="GET">
+            <button type="submit">Add Supplier</button>
+        </form>
+    </div>
+
+    <form class="records-filter" action="<%= basePath %>" method="GET">
+        <label for="category">Category:</label>
+        <select id="category" name="category">
+            <option value="all" <%= category === 'all' ? 'selected' : '' %>>All categories</option>
+            <% categories.forEach(item => { %>
+                <option value="<%= item %>" <%= category === item ? 'selected' : '' %>><%= item %></option>
+            <% }) %>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    <% if (suppliers.length > 0) { %>
+        <section class="employee-accordion">
+            <% suppliers.forEach(supplier => { %>
+                <article class="employee-card">
+                    <details>
+                        <summary><%= supplier.name %></summary>
+                        <div class="employee-details">
+                            <dl class="employee-info-grid">
+                                <div>
+                                    <dt>Category</dt>
+                                    <dd><%= supplier.category %></dd>
+                                </div>
+                                <div>
+                                    <dt>Customer Account Number</dt>
+                                    <dd><%= supplier.customerAccountNumber %></dd>
+                                </div>
+                                <div>
+                                    <dt>Contact Person</dt>
+                                    <dd><%= supplier.contactPerson %></dd>
+                                </div>
+                                <div>
+                                    <dt>Contact Email</dt>
+                                    <dd><%= supplier.contactEmail %></dd>
+                                </div>
+                                <div>
+                                    <dt>Phone 1</dt>
+                                    <dd><%= supplier.phoneOne %></dd>
+                                </div>
+                                <div>
+                                    <dt>Phone 2</dt>
+                                    <dd><%= supplier.phoneTwo %></dd>
+                                </div>
+                                <div>
+                                    <dt>Delivery Days</dt>
+                                    <dd><%= supplier.deliveryDays %></dd>
+                                </div>
+                                <div>
+                                    <dt>Order lead time</dt>
+                                    <dd><%= supplier.orderLeadTime %></dd>
+                                </div>
+                                <div>
+                                    <dt>MOQ Without Delivery Fee</dt>
+                                    <dd><%= supplier.MOQWithoutDeliveryFee %></dd>
+                                </div>
+                                <div>
+                                    <dt>Online oder plattform</dt>
+                                    <dd><%= supplier.OnlineOrderPlattform %></dd>
+                                </div>
+                                <div>
+                                    <dt>Platform Password</dt>
+                                    <dd><%= supplier.platformPassword %></dd>
+                                </div>
+                                <div>
+                                    <dt>Order Email </dt>
+                                    <dd><%= supplier.orderEmail %></dd>
+                                </div>                                
+                                <div>
+                                    <dt>Order Email 2</dt>
+                                    <dd><%= supplier.orderEmail2 %></dd>
+                                </div>                                
+                                <div>
+                                    <dt>Payment terms in days after receiving an invoice</dt>
+                                    <dd><%= supplier.paymentTerms %></dd>
+                                </div>                                
+                                <div>
+                                    <dt>Accounting Contact</dt>
+                                    <dd><%= supplier.accountingContact %></dd>
+                                </div>                                
+                                <div>
+                                    <dt>Accounting Email</dt>
+                                    <dd><%= supplier.accountingEmail %></dd>
+                                </div>
+                                <div>
+                                    <dt>Accounting Phone</dt>
+                                    <dd><%= supplier.accountingPhone %></dd>
+                                </div>
+                                <div>
+                                    <dt>Bank Name</dt>
+                                    <dd><%= supplier.bankingDetails?.bankName ?? '' %></dd>
+                                </div>
+                                <div>
+                                    <dt>Account Holder</dt>
+                                    <dd><%= supplier.bankingDetails?.accountHolder ?? '' %></dd>
+                                </div>
+                                <div>
+                                    <dt>Account Number</dt>
+                                    <dd><%= supplier.bankingDetails?.accountNumber ?? '' %></dd>
+                                </div>
+                                <div>
+                                    <dt>Branch Code</dt>
+                                    <dd><%= supplier.bankingDetails?.branchCode ?? '' %></dd>
+                                </div>
+                                <div>
+                                    <dt>Account Type</dt>
+                                    <dd><%= supplier.bankingDetails?.accountType ?? '' %></dd>
+                                </div>
+                            </dl>
+                            <div class="employee-actions">
+                                <form action="<%= basePath %>/edit/<%= supplier._id %>" method="GET">
+                                    <button type="submit">Edit</button>
+                                </form>
+                                <form action="<%= basePath %>/delete/<%= supplier._id %>" method="POST" onsubmit="return confirm('Delete this supplier record?');">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </details>
+                </article>
+            <% }) %>
+        </section>
+    <% } else { %>
+        <p>No supplier records found.</p>
+    <% } %>
+
+<%- include("./includes/end.ejs") %>

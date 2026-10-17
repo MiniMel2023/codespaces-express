@@ -12,6 +12,7 @@ const wageTrackerRoutes = require('./routes/wageTracker');
 const payrollRoutes = require('./routes/payrollPayout');
 const authRoutes = require('./routes/auth');
 const profitLossRoutes = require('./routes/profitLoss');
+const supplierRoutes = require('./routes/suppliers')
 
 const User = require('./models/user');
 
@@ -54,6 +55,8 @@ app.use('/employee', employeeRoutes);
 app.use('/wage-tracker', wageTrackerRoutes);
 app.use('/payroll', payrollRoutes);
 app.use('/profitLoss', profitLossRoutes);
+app.use('/supplierDetails', supplierRoutes);
+app.use('/profitLoss/suppliersDetails', supplierRoutes);
 
 
 
